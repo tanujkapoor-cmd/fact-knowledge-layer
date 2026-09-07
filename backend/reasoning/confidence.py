@@ -104,9 +104,7 @@ def score_classification(decision: _DecisionLike) -> RelationshipConfidence:
         step for step in decision.reasoning_trace if step.outcome is not CheckOutcome.SKIPPED
     ]
     conclusive = [
-        step
-        for step in applicable
-        if step.outcome in {CheckOutcome.PASSED, CheckOutcome.FAILED}
+        step for step in applicable if step.outcome in {CheckOutcome.PASSED, CheckOutcome.FAILED}
     ]
     judgments = [
         step.check for step in applicable if step.outcome is CheckOutcome.JUDGMENT_REQUIRED

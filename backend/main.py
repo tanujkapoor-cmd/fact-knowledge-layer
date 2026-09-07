@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from backend import __version__
 from backend.api.router import api_router
 from backend.config import Settings, get_settings
+from backend.db import tables as _tables  # noqa: F401
+from backend.db.base import Base
 from backend.db.session import build_engine, build_session_factory
 
 
@@ -20,6 +22,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        Base.metadata.create_all(engine)
         yield
         engine.dispose()
 
@@ -31,6 +34,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = resolved_settings
     app.state.db_engine = engine
     app.state.db_session_factory = session_factory
+    app.state.processing_status = {}
     app.include_router(api_router)
     return app
 

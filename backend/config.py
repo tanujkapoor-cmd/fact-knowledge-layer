@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     extraction_batch_page_limit: int = Field(default=8, ge=1)
     evidence_fuzzy_threshold: float = Field(default=92.0, ge=0.0, le=100.0)
     fiscal_year_start_month: int = Field(default=4, ge=1, le=12)
+    max_upload_bytes: int = Field(default=100 * 1024 * 1024, ge=1)
 
 
 @lru_cache

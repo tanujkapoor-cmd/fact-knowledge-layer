@@ -115,6 +115,14 @@ outcome. Skipped checks are not counted. These scores are never averaged into a 
   file-backed databases.
 - Secrets and uploaded documents are never committed to Git.
 
+## Persistence and incremental processing
+
+SQLite stores immutable document hashes, page text and offsets, extracted facts (including failed
+evidence), normalized payloads, and deterministic relationship traces. Relationships use a unique
+canonical fact-pair key, so processing a new document compares it with eligible existing facts but
+does not duplicate earlier decisions. A failed background run records the exception type and
+message on the document instead of silently disappearing.
+
 ## Phase boundaries
 
 The project is implemented in the ten user-approved phases. Each phase must pass its relevant

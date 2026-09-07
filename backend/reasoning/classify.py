@@ -41,9 +41,7 @@ def _finish_trace(trace: list[ReasoningStep], reason: str) -> tuple[ReasoningSte
     seen = {step.check for step in trace}
     for order, check in enumerate(_CHECKS, start=1):
         if check not in seen:
-            trace.append(
-                _step(order, check, CheckOutcome.SKIPPED, reason=reason)
-            )
+            trace.append(_step(order, check, CheckOutcome.SKIPPED, reason=reason))
     return tuple(sorted(trace, key=lambda step: step.order))
 
 
@@ -207,12 +205,8 @@ def classify_relationship(
             3,
             "normalized_value_equality",
             value_outcome,
-            value_a=str(
-                fact_a.value.normalized_numeric_value or fact_a.value.normalized_text
-            ),
-            value_b=str(
-                fact_b.value.normalized_numeric_value or fact_b.value.normalized_text
-            ),
+            value_a=str(fact_a.value.normalized_numeric_value or fact_a.value.normalized_text),
+            value_b=str(fact_b.value.normalized_numeric_value or fact_b.value.normalized_text),
         )
     )
 
