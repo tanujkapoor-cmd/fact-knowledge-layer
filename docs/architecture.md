@@ -57,6 +57,19 @@ Evidence alignment runs in this order:
 Every successful method maps back to the original page offsets. The stored quote is always sliced
 from the original extracted page text, even when normalized or fuzzy alignment found it.
 
+## Deterministic normalization
+
+Normalization is a pure transformation with a versioned contract. It canonicalizes entity and
+predicate comparison keys, converts supported scales and physical units with `Decimal` arithmetic,
+and parses common reporting periods into inclusive date boundaries. Unknown text, units, and date
+phrases remain explicit rather than being guessed.
+
+Currency aliases may be canonicalized without an exchange rate. Cross-currency conversion occurs
+only when the caller supplies a dated rate table and target currency. Rates use a documented
+`rates_to_base` convention, so the same fact and rate table always yield the same amount. The fiscal
+year start month is configuration (`4` for the supplied Indian reporting context), not inferred from
+a filename or hidden global state.
+
 ## Evidence invariants
 
 - Physical PDF page numbers are one-based.
