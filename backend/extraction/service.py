@@ -13,6 +13,7 @@ from backend.extraction.schemas import (
 from backend.extraction.verifier import EvidenceVerifier
 from backend.ingestion import ParsedPage, ParsedPdf
 from backend.models import EvidenceReference, EvidenceStatus
+from backend.reasoning.confidence import score_fact_confidence
 
 
 class FactExtractionService:
@@ -114,6 +115,7 @@ class FactExtractionService:
                     candidate=candidate,
                     evidence=evidence,
                     verification=verification,
+                    confidence=score_fact_confidence(candidate, evidence, verification),
                     classification_eligible=evidence.status is EvidenceStatus.VERIFIED,
                 )
             )

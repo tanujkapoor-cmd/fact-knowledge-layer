@@ -97,6 +97,14 @@ units or currencies reconcile; different periods or scopes reconcile unequal val
 incompatible comparison context is uncertain. A contradiction is emitted only after every
 deterministic context check has failed to explain unequal values.
 
+## Confidence contracts
+
+Confidence is deliberately plural. Extraction confidence reports the fraction of explicit
+structured-contract checks passed and warns that it is not a truth estimate. Evidence confidence
+is the measured source-alignment similarity (or zero for a failed quote). Classification confidence
+is the fraction of applicable trace checks resolved conclusively without a judgment-required
+outcome. Skipped checks are not counted. These scores are never averaged into a single number.
+
 ## Runtime constraints
 
 - FastAPI background work opens a new database session; request-scoped sessions are never

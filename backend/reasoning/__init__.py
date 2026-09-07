@@ -5,6 +5,13 @@ from backend.reasoning.classify import (
     block_relationship_candidates,
     classify_relationship,
 )
+from backend.reasoning.confidence import (
+    CONFIDENCE_VERSION,
+    score_classification,
+    score_evidence_verification,
+    score_extraction,
+    score_fact_confidence,
+)
 from backend.reasoning.normalize import (
     NORMALIZATION_VERSION,
     CurrencyConversionError,
@@ -29,6 +36,7 @@ from backend.reasoning.schemas import (
 
 __all__ = [
     "CLASSIFIER_VERSION",
+    "CONFIDENCE_VERSION",
     "ClassificationDecision",
     "CurrencyConversionError",
     "EntityNormalization",
@@ -48,4 +56,8 @@ __all__ = [
     "normalize_fact",
     "normalize_value",
     "parse_date_range",
+    "score_classification",
+    "score_evidence_verification",
+    "score_extraction",
+    "score_fact_confidence",
 ]

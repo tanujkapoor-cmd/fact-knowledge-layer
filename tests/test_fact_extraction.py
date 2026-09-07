@@ -75,6 +75,8 @@ def test_service_retains_failed_fact_but_excludes_it_from_classification() -> No
 
     assert len(run.facts) == 1
     assert run.facts[0].evidence.status is EvidenceStatus.FAILED
+    assert run.facts[0].confidence.evidence_verification.value == 0.0
+    assert run.facts[0].confidence.extraction.value == 1.0
     assert run.facts[0].classification_eligible is False
     assert run.request_ids == ["request-1"]
 
@@ -93,6 +95,7 @@ def test_service_rejects_model_page_outside_supplied_batch() -> None:
     record = FactExtractionService(adapter).extract_document(document).facts[0]
 
     assert record.evidence.status is EvidenceStatus.FAILED
+    assert record.confidence.extraction.value == 0.8
     assert "outside" in record.evidence.failure_reason
     assert record.classification_eligible is False
 

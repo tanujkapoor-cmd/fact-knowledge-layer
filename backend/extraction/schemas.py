@@ -5,7 +5,7 @@ from typing import Annotated, Self
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-from backend.models import EvidenceReference, EvidenceStatus
+from backend.models import EvidenceReference, EvidenceStatus, FactConfidence
 
 NonEmptyText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 OptionalCleanText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] | None
@@ -88,6 +88,7 @@ class ExtractedFactRecord(ExtractionModel):
     candidate: FactCandidate
     evidence: EvidenceReference
     verification: EvidenceVerification
+    confidence: FactConfidence
     classification_eligible: bool
 
     @model_validator(mode="after")
