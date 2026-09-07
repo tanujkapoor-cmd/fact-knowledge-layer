@@ -15,6 +15,8 @@ from pydantic import (
     model_validator,
 )
 
+from backend.models import ReasoningStep, RelationshipType
+
 NonEmptyText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
@@ -38,6 +40,15 @@ class TemporalGranularity(StrEnum):
     FISCAL_YEAR = "fiscal_year"
     DATE_RANGE = "date_range"
     UNKNOWN = "unknown"
+
+
+class ReconciliationReason(StrEnum):
+    """Context that deterministically explains an apparent value difference."""
+
+    TIME_PERIOD = "time_period"
+    UNIT = "unit"
+    CURRENCY = "currency"
+    SCOPE = "scope"
 
 
 class EntityNormalization(ReasoningModel):
@@ -135,3 +146,20 @@ class NormalizedFact(ReasoningModel):
     value: NormalizedValue
     temporal_scope: NormalizedTemporalScope | None = None
     scope: str | None = None
+
+
+class RelationshipCandidate(ReasoningModel):
+    """A cross-document pair emitted by deterministic candidate blocking."""
+
+    fact_a: NormalizedFact
+    fact_b: NormalizedFact
+
+
+class ClassificationDecision(ReasoningModel):
+    """Deterministic classifier output before persistence and confidence scoring."""
+
+    fact_a_id: UUID | None = None
+    fact_b_id: UUID | None = None
+    classification: RelationshipType
+    reconciliation_reasons: tuple[ReconciliationReason, ...] = ()
+    reasoning_trace: tuple[ReasoningStep, ...] = Field(min_length=1)

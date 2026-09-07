@@ -90,6 +90,13 @@ a filename or hidden global state.
 - Every relationship includes an ordered, machine-readable reasoning trace.
 - Extraction, evidence-verification, and classification confidence remain separate scores.
 
+The classifier emits candidates only inside an exact canonical entity-and-predicate block and,
+by default, only across different documents. Its trace always contains the complete ordered
+decision tree. Exact same representations corroborate; equivalent values converted from different
+units or currencies reconcile; different periods or scopes reconcile unequal values. Missing or
+incompatible comparison context is uncertain. A contradiction is emitted only after every
+deterministic context check has failed to explain unequal values.
+
 ## Runtime constraints
 
 - FastAPI background work opens a new database session; request-scoped sessions are never
