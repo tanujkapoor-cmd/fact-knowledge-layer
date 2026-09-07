@@ -2,16 +2,18 @@
 
 from datetime import date, datetime
 from enum import StrEnum
-from typing import Self
+from typing import Annotated, Self
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+
+NonEmptyText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 class DomainModel(BaseModel):
     """Strict base model used for all domain data crossing a boundary."""
 
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    model_config = ConfigDict(extra="forbid")
 
 
 class DocumentStatus(StrEnum):
@@ -48,7 +50,7 @@ class ConfidenceScore(DomainModel):
     """One independently interpretable confidence measurement."""
 
     value: float = Field(ge=0.0, le=1.0)
-    method: str = Field(min_length=1)
+    method: NonEmptyText
     reasons: list[str] = Field(default_factory=list)
 
 
@@ -108,7 +110,7 @@ class Document(DomainModel):
     """Uploaded document identity and processing state."""
 
     id: UUID
-    file_name: str = Field(min_length=1)
+    file_name: NonEmptyText
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     status: DocumentStatus
     created_at: datetime
@@ -120,9 +122,9 @@ class Fact(DomainModel):
 
     id: UUID
     document_id: UUID
-    subject: str = Field(min_length=1)
-    predicate: str = Field(min_length=1)
-    value: str = Field(min_length=1)
+    subject: NonEmptyText
+    predicate: NonEmptyText
+    value: NonEmptyText
     unit: str | None = None
     currency: str | None = None
     temporal_scope: TemporalScope | None = None
@@ -134,7 +136,7 @@ class ReasoningStep(DomainModel):
     """One ordered, machine-readable classifier check."""
 
     order: int = Field(ge=1)
-    check: str = Field(min_length=1)
+    check: NonEmptyText
     outcome: CheckOutcome
     details: dict[str, str | int | float | bool | None] = Field(default_factory=dict)
 

@@ -9,6 +9,7 @@ description = "Evidence-grounded fact extraction and deterministic cross-documen
 requires-python = ">=3.11,<3.15"
 dependencies = [
     "fastapi>=0.116,<1.0",
+    "pymupdf>=1.26,<2.0",
     "pydantic>=2.11,<3.0",
     "pydantic-settings>=2.10,<3.0",
     "sqlalchemy>=2.0.43,<3.0",

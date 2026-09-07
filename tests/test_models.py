@@ -36,6 +36,18 @@ def test_failed_evidence_requires_a_reason() -> None:
         )
 
 
+def test_evidence_quote_whitespace_is_preserved_verbatim() -> None:
+    evidence = EvidenceReference(
+        physical_page_number=1,
+        quote="  exact source text  ",
+        start_offset=4,
+        end_offset=25,
+        status=EvidenceStatus.VERIFIED,
+    )
+
+    assert evidence.quote == "  exact source text  "
+
+
 def test_confidence_is_bounded_and_explainable() -> None:
     score = ConfidenceScore(
         value=0.75,
