@@ -1,0 +1,7 @@
+"""SQLAlchemy declarative model base."""
+
+from sqlalchemy.orm import DeclarativeBase
+
+
+class Base(DeclarativeBase):
+    """Base class for persistence models introduced in Phase 7."""
