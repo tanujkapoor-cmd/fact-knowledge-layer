@@ -83,6 +83,8 @@ def _values_equal(fact_a: NormalizedFact, fact_b: NormalizedFact) -> bool | None
     if left.kind is ValueKind.TEXT:
         return left.normalized_text == right.normalized_text
 
+    if left.canonical_unit != right.canonical_unit:
+        return None
     if left.unit_dimension != right.unit_dimension:
         return None
     if left.canonical_currency != right.canonical_currency:
@@ -90,6 +92,12 @@ def _values_equal(fact_a: NormalizedFact, fact_b: NormalizedFact) -> bool | None
     assert left.normalized_numeric_value is not None
     assert right.normalized_numeric_value is not None
     return _numeric_values_equal(left.normalized_numeric_value, right.normalized_numeric_value)
+
+
+def _display_value(fact: NormalizedFact) -> str:
+    if fact.value.kind is ValueKind.NUMERIC:
+        return str(fact.value.normalized_numeric_value)
+    return str(fact.value.normalized_text)
 
 
 def _different_representation_reasons(
@@ -139,6 +147,8 @@ def _comparison_gap(fact_a: NormalizedFact, fact_b: NormalizedFact) -> str | Non
     if left.kind is not right.kind:
         return "value kinds differ"
     if left.kind is ValueKind.NUMERIC:
+        if left.canonical_unit != right.canonical_unit:
+            return "units are missing or cannot be converted to a common basis"
         if left.unit_dimension != right.unit_dimension:
             return "unit dimensions are missing or incompatible"
         if left.canonical_currency != right.canonical_currency:
@@ -205,8 +215,8 @@ def classify_relationship(
             3,
             "normalized_value_equality",
             value_outcome,
-            value_a=str(fact_a.value.normalized_numeric_value or fact_a.value.normalized_text),
-            value_b=str(fact_b.value.normalized_numeric_value or fact_b.value.normalized_text),
+            value_a=_display_value(fact_a),
+            value_b=_display_value(fact_b),
         )
     )
 

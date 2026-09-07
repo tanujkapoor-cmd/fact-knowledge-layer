@@ -32,7 +32,7 @@ dev = [
 include = ["backend*"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers --cov=backend --cov=frontend.api_client --cov=evaluation --cov-branch --cov-report=term-missing --cov-fail-under=85"
 testpaths = ["tests"]
 
 [tool.ruff]

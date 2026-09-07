@@ -124,6 +124,37 @@ def test_failed_evidence_is_visible_but_ineligible(client: TestClient) -> None:
     assert facts[0]["confidence"]["evidence_verification"]["value"] == 0.0
 
 
+def test_failed_evidence_never_enters_relationship_classification(client: TestClient) -> None:
+    _install_fake_adapter(client)
+    verified = client.post(
+        "/documents",
+        files={
+            "file": (
+                "verified.pdf",
+                _pdf_bytes("Acme revenue was 100 in FY2024."),
+                "application/pdf",
+            )
+        },
+    )
+    failed = client.post(
+        "/documents",
+        files={
+            "file": (
+                "unverified.pdf",
+                _pdf_bytes("unverified source marker"),
+                "application/pdf",
+            )
+        },
+    )
+
+    verified_facts = client.get(f"/documents/{verified.json()['id']}/facts").json()
+    failed_facts = client.get(f"/documents/{failed.json()['id']}/facts").json()
+
+    assert verified_facts[0]["classification_eligible"] is True
+    assert failed_facts[0]["classification_eligible"] is False
+    assert client.get("/relationships").json() == []
+
+
 def test_invalid_pdf_and_unknown_document_return_honest_states(client: TestClient) -> None:
     _install_fake_adapter(client)
     upload = client.post(

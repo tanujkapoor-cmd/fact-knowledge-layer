@@ -128,3 +128,10 @@ message on the document instead of silently disappearing.
 The project is implemented in the ten user-approved phases. Each phase must pass its relevant
 tests, be committed separately, and stop for review. Deployment is an optional eleventh phase
 after the required system is complete. No README is created by this implementation.
+
+## Verification boundary
+
+The final acceptance suite maps directly to the required classifier outcomes, all four contextual
+reconciliation reasons, unresolved comparisons, complete ordered traces, fabricated-quote
+rejection, and classification exclusion for failed evidence. An AST guard covers the complete
+reasoning package so an LLM SDK cannot be introduced there accidentally.
