@@ -1,0 +1,10 @@
+{
+  "facts": [],
+  "relationships": [],
+  "scope": [
+    {
+      "document_key": "replace-with-file-name-or-sha256",
+      "physical_pages": [1]
+    }
+  ]
+}
