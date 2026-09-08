@@ -14,6 +14,7 @@ from backend.extraction import (
     LlmExtractionError,
 )
 from backend.extraction.openai_adapter import SYSTEM_PROMPT, OpenAIStructuredFactAdapter
+from backend.extraction.retry import retry_provider_call
 from backend.extraction.schemas import AdapterExtractionResult
 from backend.ingestion import ParsedPage, ParsedPdf
 from backend.ingestion.schemas import PAGE_SEPARATOR
@@ -38,6 +39,8 @@ def _candidate(page_number: int, quote: str) -> FactCandidate:
         unit="crore",
         currency="INR",
         temporal_scope="FY2024",
+        scope=None,
+        data_vintage=None,
         evidence_quote=quote,
         page_number=page_number,
     )
@@ -124,6 +127,30 @@ def test_service_batches_without_splitting_pages() -> None:
     assert run.request_ids == ["request-1", "request-2", "request-3"]
 
 
+def test_provider_retry_is_bounded_and_reports_attempt_count() -> None:
+    attempts = 0
+    delays: list[float] = []
+
+    def operation() -> str:
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise RuntimeError("transient")
+        return "ok"
+
+    result, attempt_count = retry_provider_call(
+        operation,
+        retryable_errors=(RuntimeError,),
+        max_attempts=3,
+        base_seconds=0.25,
+        sleep=delays.append,
+    )
+
+    assert result == "ok"
+    assert attempt_count == 3
+    assert delays == [0.25, 0.5]
+
+
 class _FakeResponses:
     def __init__(self, parsed: FactCandidateBatch) -> None:
         self._parsed = parsed
@@ -163,6 +190,8 @@ def test_structured_schema_requires_nullable_fact_fields() -> None:
         "unit",
         "currency",
         "temporal_scope",
+        "scope",
+        "data_vintage",
         "evidence_quote",
         "page_number",
     }

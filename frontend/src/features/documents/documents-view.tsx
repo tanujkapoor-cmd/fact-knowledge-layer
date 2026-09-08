@@ -123,19 +123,26 @@ export function DocumentsView({
     chooseFile(event.dataTransfer.files.item(0))
   }
 
-  async function handleUpload() {
+  async function handleUpload(retryFailed = false) {
     if (!file) return
     setIsUploading(true)
     setNotice(null)
     try {
-      const document = await api.uploadDocument(file)
+      const document = await api.uploadDocument(file, retryFailed)
       onDocumentUpdate(document)
-      setFile(null)
-      if (inputRef.current) inputRef.current.value = ""
+      const failedDuplicate = document.duplicate_reused && document.status === "failed"
+      if (!failedDuplicate) {
+        setFile(null)
+        if (inputRef.current) inputRef.current.value = ""
+      }
       setNotice({
-        tone: "success",
-        text: document.duplicate_reused
-          ? "Exact duplicate found. Existing analysis has been reused."
+        tone: failedDuplicate ? "danger" : "success",
+        text: document.retry_started
+          ? "Retry started from a clean extraction checkpoint."
+          : failedDuplicate
+            ? "This exact PDF has a failed analysis. Review the failure below, then retry it."
+            : document.duplicate_reused
+              ? "Exact duplicate found. Existing completed analysis has been reused."
           : "Document accepted. Status updates will appear automatically.",
       })
     } catch (error) {
@@ -265,7 +272,7 @@ export function DocumentsView({
             <Button
               className="mt-4 w-full"
               disabled={!file || isUploading}
-              onClick={() => void handleUpload()}
+              onClick={() => void handleUpload(false)}
             >
               {isUploading ? <RefreshCw className="size-4 animate-spin" aria-hidden="true" /> : null}
               {isUploading ? "Sending document…" : "Extract grounded facts"}
@@ -369,6 +376,16 @@ export function DocumentsView({
                       <p className="mt-1 truncate font-mono text-[10px] text-slate-500">
                         {document.id} · {document.page_count ?? "—"} pages
                       </p>
+                      {ACTIVE_STATUSES.includes(document.status) ? (
+                        <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+                          {document.processed_page_count ?? 0}/{document.page_count ?? "?"} pages checkpointed · {document.provider_attempt_count ?? 0} provider attempts
+                        </p>
+                      ) : null}
+                      {document.status === "failed" ? (
+                        <p className="mt-2 max-w-3xl text-xs leading-5 text-red-800" role="alert">
+                          Analysis stopped: {document.failure_reason || "The backend did not provide a failure reason."} Choose this PDF again and retry; completed documents are never overwritten.
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -392,6 +409,16 @@ export function DocumentsView({
                     >
                       Review facts
                     </Button>
+                    {document.status === "failed" ? (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        disabled={!file || isUploading}
+                        onClick={() => void handleUpload(true)}
+                      >
+                        Retry failed analysis
+                      </Button>
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>

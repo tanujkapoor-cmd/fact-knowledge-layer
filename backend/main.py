@@ -10,6 +10,7 @@ from backend.api.router import api_router
 from backend.config import Settings, get_settings
 from backend.db import tables as _tables  # noqa: F401
 from backend.db.base import Base
+from backend.db.migrations import apply_additive_migrations
 from backend.db.session import build_engine, build_session_factory
 
 
@@ -23,6 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         Base.metadata.create_all(engine)
+        apply_additive_migrations(engine)
         yield
         engine.dispose()
 

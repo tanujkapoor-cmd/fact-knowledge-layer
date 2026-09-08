@@ -20,6 +20,11 @@ def present_document(row: DocumentRow) -> DocumentStatusResponse:
             "created_at": row.created_at,
             "page_count": row.page_count,
             "failure_reason": row.failure_reason,
+            "processed_page_count": row.processed_page_count,
+            "extraction_batch_count": row.extraction_batch_count,
+            "provider_attempt_count": row.provider_attempt_count,
+            "retry_count": row.retry_count,
+            "last_checkpoint_at": row.last_checkpoint_at,
         }
     )
 
@@ -35,6 +40,8 @@ def present_fact(row: FactRow) -> FactResponse:
             "unit": row.unit,
             "currency": row.currency,
             "temporal_scope": row.temporal_scope,
+            "scope": row.scope,
+            "data_vintage": row.data_vintage,
             "evidence": EvidenceReference(
                 physical_page_number=row.physical_page_number,
                 printed_page_label=row.printed_page_label,

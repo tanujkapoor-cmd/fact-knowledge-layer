@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import Select, or_, select
+from sqlalchemy import Select, delete, or_, select
 from sqlalchemy.orm import Session
 
 from backend.db.tables import DocumentRow, FactRow, PageRow, RelationshipRow
@@ -34,6 +34,10 @@ class KnowledgeRepository:
             sha256=sha256,
             status=DocumentStatus.QUEUED.value,
             created_at=datetime.now(UTC),
+            processed_page_count=0,
+            extraction_batch_count=0,
+            provider_attempt_count=0,
+            retry_count=0,
         )
         self.session.add(row)
         self.session.flush()
@@ -51,6 +55,52 @@ class KnowledgeRepository:
             raise LookupError(f"document {document_id} does not exist")
         document.status = status.value
         document.failure_reason = failure_reason
+
+    def set_document_checkpoint(
+        self,
+        document_id: UUID | str,
+        *,
+        completed_pages: int,
+        completed_batches: int,
+        provider_attempts: int,
+    ) -> None:
+        document = self.get_document(document_id)
+        if document is None:
+            raise LookupError(f"document {document_id} does not exist")
+        document.processed_page_count = completed_pages
+        document.extraction_batch_count = completed_batches
+        document.provider_attempt_count = provider_attempts
+        document.last_checkpoint_at = datetime.now(UTC)
+
+    def prepare_document_retry(self, document_id: UUID | str) -> DocumentRow:
+        """Clear derived rows from a failed attempt while preserving document identity."""
+
+        document = self.get_document(document_id)
+        if document is None:
+            raise LookupError(f"document {document_id} does not exist")
+        if document.status != DocumentStatus.FAILED.value:
+            raise ValueError("only failed documents can be retried")
+        fact_ids = select(FactRow.id).where(FactRow.document_id == str(document_id))
+        self.session.execute(
+            delete(RelationshipRow).where(
+                or_(
+                    RelationshipRow.fact_a_id.in_(fact_ids),
+                    RelationshipRow.fact_b_id.in_(fact_ids),
+                )
+            )
+        )
+        self.session.execute(delete(FactRow).where(FactRow.document_id == str(document_id)))
+        self.session.execute(delete(PageRow).where(PageRow.document_id == str(document_id)))
+        document.status = DocumentStatus.QUEUED.value
+        document.failure_reason = None
+        document.page_count = None
+        document.processed_page_count = 0
+        document.extraction_batch_count = 0
+        document.provider_attempt_count = 0
+        document.last_checkpoint_at = None
+        document.retry_count += 1
+        self.session.flush()
+        return document
 
     def save_pages(self, document_id: UUID | str, parsed: ParsedPdf) -> None:
         document = self.get_document(document_id)
@@ -91,6 +141,8 @@ class KnowledgeRepository:
             unit=candidate.unit,
             currency=candidate.currency,
             temporal_scope=candidate.temporal_scope,
+            scope=candidate.scope,
+            data_vintage=candidate.data_vintage,
             physical_page_number=evidence.physical_page_number,
             printed_page_label=evidence.printed_page_label,
             evidence_quote=evidence.quote,

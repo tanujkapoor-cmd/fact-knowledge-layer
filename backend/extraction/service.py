@@ -1,12 +1,13 @@
 """Orchestration of LLM extraction, batching, and evidence verification."""
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Callable, Iterator, Sequence
 
 from backend.extraction.adapter import FactExtractionAdapter
 from backend.extraction.schemas import (
     EvidenceMatchMethod,
     EvidenceVerification,
     ExtractedFactRecord,
+    ExtractionCheckpoint,
     ExtractionRun,
     FactCandidate,
 )
@@ -26,6 +27,7 @@ class FactExtractionService:
         *,
         batch_character_limit: int = 50_000,
         batch_page_limit: int = 8,
+        on_checkpoint: Callable[[ExtractionCheckpoint], None] | None = None,
     ) -> None:
         if batch_character_limit < 1 or batch_page_limit < 1:
             raise ValueError("batch limits must be positive")
@@ -33,24 +35,42 @@ class FactExtractionService:
         self._verifier = verifier or EvidenceVerifier()
         self._batch_character_limit = batch_character_limit
         self._batch_page_limit = batch_page_limit
+        self._on_checkpoint = on_checkpoint
 
     def extract_document(self, document: ParsedPdf) -> ExtractionRun:
         """Extract and verify all facts while preserving page boundaries."""
 
         facts: list[ExtractedFactRecord] = []
         request_ids: list[str] = []
+        provider_attempts = 0
+        completed_pages = 0
+        completed_batches = 0
 
         for pages in self._page_batches(document.pages):
             adapter_result = self._adapter.extract_facts(pages)
             if adapter_result.request_id:
                 request_ids.append(adapter_result.request_id)
             facts.extend(self._verify_candidates(adapter_result.candidates, pages))
+            provider_attempts += adapter_result.attempt_count
+            completed_pages += len(pages)
+            completed_batches += 1
+            if self._on_checkpoint:
+                self._on_checkpoint(
+                    ExtractionCheckpoint(
+                        completed_pages=completed_pages,
+                        total_pages=document.page_count,
+                        completed_batches=completed_batches,
+                        facts_seen=len(facts),
+                        provider_attempts=provider_attempts,
+                    )
+                )
 
         return ExtractionRun(
             provider=self._adapter.provider,
             model=self._adapter.model,
             prompt_version=self._adapter.prompt_version,
             request_ids=request_ids,
+            provider_attempts=provider_attempts,
             facts=facts,
         )
 

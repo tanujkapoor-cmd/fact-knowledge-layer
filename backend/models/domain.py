@@ -128,6 +128,8 @@ class Fact(DomainModel):
     unit: str | None = None
     currency: str | None = None
     temporal_scope: TemporalScope | None = None
+    scope: str | None = None
+    data_vintage: TemporalScope | None = None
     evidence: EvidenceReference
     confidence: FactConfidence
 

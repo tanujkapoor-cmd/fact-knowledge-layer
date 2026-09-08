@@ -10,8 +10,14 @@ from pydantic import ValidationError
 
 from backend.extraction.errors import LlmConfigurationError, LlmExtractionError
 from backend.extraction.prompt import PROMPT_VERSION, SYSTEM_PROMPT
-from backend.extraction.schemas import AdapterExtractionResult, FactCandidateBatch
+from backend.extraction.retry import retry_provider_call
+from backend.extraction.schemas import (
+    AdapterExtractionResult,
+    EntityMatchBatch,
+    FactCandidateBatch,
+)
 from backend.ingestion import ParsedPage
+from backend.reasoning import AmbiguousEntityCandidate
 
 
 class GeminiStructuredFactAdapter:
@@ -26,10 +32,16 @@ class GeminiStructuredFactAdapter:
         *,
         api_key: str | None = None,
         client: Any | None = None,
+        max_attempts: int = 3,
+        retry_base_seconds: float = 0.5,
+        sleep: Any | None = None,
     ) -> None:
         if not model.strip():
             raise LlmConfigurationError("a Gemini model name is required")
         self._model = model.strip()
+        self._max_attempts = max_attempts
+        self._retry_base_seconds = retry_base_seconds
+        self._sleep = sleep
         try:
             self._client = client or genai.Client(api_key=api_key)
         except (TypeError, ValueError) as exc:
@@ -62,15 +74,26 @@ class GeminiStructuredFactAdapter:
         )
 
         try:
-            response = self._client.models.generate_content(
-                model=self._model,
-                contents=user_content,
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_PROMPT,
-                    response_mime_type="application/json",
-                    response_json_schema=FactCandidateBatch.model_json_schema(),
-                ),
-            )
+
+            def operation() -> Any:
+                return self._client.models.generate_content(
+                    model=self._model,
+                    contents=user_content,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT,
+                        response_mime_type="application/json",
+                        response_json_schema=FactCandidateBatch.model_json_schema(),
+                    ),
+                )
+
+            retry_kwargs = {
+                "retryable_errors": (errors.APIError,),
+                "max_attempts": self._max_attempts,
+                "base_seconds": self._retry_base_seconds,
+            }
+            if self._sleep is not None:
+                retry_kwargs["sleep"] = self._sleep
+            response, attempt_count = retry_provider_call(operation, **retry_kwargs)
         except errors.APIError as exc:
             raise LlmExtractionError("Gemini fact extraction failed") from exc
 
@@ -88,4 +111,61 @@ class GeminiStructuredFactAdapter:
             raise LlmExtractionError("Gemini returned an invalid fact payload") from exc
 
         request_id = getattr(response, "response_id", None)
-        return AdapterExtractionResult(candidates=payload.facts, request_id=request_id)
+        return AdapterExtractionResult(
+            candidates=payload.facts,
+            request_id=request_id,
+            attempt_count=attempt_count,
+        )
+
+    def resolve_entity_matches(
+        self,
+        candidates: Sequence[AmbiguousEntityCandidate],
+    ) -> EntityMatchBatch:
+        """Break only bounded near-name ties; relationship labels remain deterministic."""
+
+        if not candidates:
+            return EntityMatchBatch(decisions=[])
+        payload = [
+            {
+                "pair_id": candidate.pair_id,
+                "entity_a": candidate.fact_a.entity.original_name,
+                "entity_b": candidate.fact_b.entity.original_name,
+                "shared_predicate": candidate.fact_a.canonical_predicate,
+                "string_similarity": candidate.similarity,
+            }
+            for candidate in candidates
+        ]
+        content = (
+            "For each supplied near-name pair, decide only whether both names refer to the same "
+            "real-world entity. Preserve every pair_id, return one decision per pair, and do not "
+            "classify, compare, or explain the facts themselves. Source data:\n"
+            + json.dumps(payload, ensure_ascii=False)
+        )
+        try:
+            response, _ = retry_provider_call(
+                lambda: self._client.models.generate_content(
+                    model=self._model,
+                    contents=content,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_json_schema=EntityMatchBatch.model_json_schema(),
+                    ),
+                ),
+                retryable_errors=(errors.APIError,),
+                max_attempts=self._max_attempts,
+                base_seconds=self._retry_base_seconds,
+                **({"sleep": self._sleep} if self._sleep is not None else {}),
+            )
+        except errors.APIError as exc:
+            raise LlmExtractionError("Gemini entity tie-break failed") from exc
+        parsed = getattr(response, "parsed", None)
+        if isinstance(parsed, EntityMatchBatch):
+            return parsed
+        try:
+            if parsed is not None:
+                return EntityMatchBatch.model_validate(parsed)
+            if getattr(response, "text", None):
+                return EntityMatchBatch.model_validate_json(response.text)
+        except ValidationError as exc:
+            raise LlmExtractionError("Gemini returned invalid entity matches") from exc
+        raise LlmExtractionError("Gemini returned no entity-match payload")

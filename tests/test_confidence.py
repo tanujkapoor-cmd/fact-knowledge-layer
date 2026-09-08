@@ -21,6 +21,8 @@ def _candidate() -> FactCandidate:
         unit=None,
         currency=None,
         temporal_scope="FY2024",
+        scope=None,
+        data_vintage=None,
         evidence_quote="Acme revenue was 100.",
         page_number=1,
     )

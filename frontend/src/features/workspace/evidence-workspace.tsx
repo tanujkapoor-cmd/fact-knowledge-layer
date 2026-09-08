@@ -16,6 +16,8 @@ import { api } from "@/lib/api"
 import type { Fact, Relationship, TrackedDocument } from "@/lib/types"
 import { cn, sentenceCase } from "@/lib/utils"
 
+const ACTIVE_STATUSES = new Set(["queued", "ingesting", "extracting", "verifying", "normalizing", "classifying"])
+
 interface EvidenceWorkspaceProps {
   documents: TrackedDocument[]
   selectedDocumentId: string
@@ -87,18 +89,37 @@ export function EvidenceWorkspace({
     return () => {
       cancelled = true
     }
-  }, [selectedDocumentId])
+  }, [selectedDocumentId, selectedDocument?.status])
 
-  async function uploadDocument() {
+  useEffect(() => {
+    const active = documents.filter((document) => ACTIVE_STATUSES.has(document.status))
+    if (!active.length) return
+    const interval = window.setInterval(() => {
+      active.forEach((document) => {
+        void api.documentStatus(document.id).then((status) => {
+          onDocumentUpdate({ ...document, ...status })
+        }).catch(() => {
+          // The selected document panel retains the last durable checkpoint.
+        })
+      })
+    }, 2500)
+    return () => window.clearInterval(interval)
+  }, [documents, onDocumentUpdate])
+
+  async function uploadDocument(retryFailed = false) {
     if (!file) return
     setUploading(true)
     setLoadError(null)
     try {
-      const document = await api.uploadDocument(file)
+      const document = await api.uploadDocument(file, retryFailed)
       onDocumentUpdate(document)
       onSelectedDocumentChange(document.id)
-      setFile(null)
-      if (fileInput.current) fileInput.current.value = ""
+      if (document.duplicate_reused && document.status === "failed" && !document.retry_started) {
+        setLoadError("This exact PDF has a failed analysis. The reason is shown in the register; retry it to start from a clean checkpoint.")
+      } else {
+        setFile(null)
+        if (fileInput.current) fileInput.current.value = ""
+      }
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Document upload failed.")
     } finally {
@@ -164,6 +185,16 @@ export function EvidenceWorkspace({
                     <p className="mt-1 font-mono text-[9px] text-muted-foreground">
                       {document.page_count ?? "—"} pages · {document.sha256.slice(0, 9)}
                     </p>
+                    {ACTIVE_STATUSES.has(document.status) ? (
+                      <p className="mt-1 font-mono text-[9px] text-muted-foreground">
+                        {document.processed_page_count ?? 0}/{document.page_count ?? "?"} pages · {document.provider_attempt_count ?? 0} attempts
+                      </p>
+                    ) : null}
+                    {document.status === "failed" ? (
+                      <p className="mt-2 line-clamp-3 text-[10px] leading-4 text-red-800" role="alert">
+                        {document.failure_reason || "Processing failed without a stored reason."}
+                      </p>
+                    ) : null}
                   </button>
                 )
               })
@@ -187,10 +218,15 @@ export function EvidenceWorkspace({
             <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => fileInput.current?.click()}>
               <FilePlus2 className="size-3.5" /> {file ? file.name : "Choose source PDF"}
             </Button>
-            <Button size="sm" className="mt-2 w-full" disabled={!file || uploading} onClick={() => void uploadDocument()}>
+            <Button size="sm" className="mt-2 w-full" disabled={!file || uploading} onClick={() => void uploadDocument(selectedDocument?.status === "failed")}>
               {uploading ? <LoaderCircle className="size-3.5 animate-spin" /> : <UploadCloud className="size-3.5" />}
-              {uploading ? "Registering…" : "Register & extract"}
+              {uploading ? "Registering…" : selectedDocument?.status === "failed" ? "Retry failed analysis" : "Register & extract"}
             </Button>
+            {selectedDocument?.status === "failed" ? (
+              <p className="mt-2 text-[10px] leading-4 text-red-800">
+                Choose the same PDF. Retry clears only its failed derived rows and preserves its document ID.
+              </p>
+            ) : null}
           </div>
         </aside>
 

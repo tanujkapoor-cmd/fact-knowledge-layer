@@ -1,9 +1,11 @@
 """Pure deterministic normalization and classification package."""
 
+from backend.reasoning.aliases import AliasConfig, load_alias_config
 from backend.reasoning.classify import (
     CLASSIFIER_VERSION,
     block_relationship_candidates,
     classify_relationship,
+    find_ambiguous_entity_candidates,
 )
 from backend.reasoning.confidence import (
     CONFIDENCE_VERSION,
@@ -22,6 +24,7 @@ from backend.reasoning.normalize import (
     parse_date_range,
 )
 from backend.reasoning.schemas import (
+    AmbiguousEntityCandidate,
     ClassificationDecision,
     EntityNormalization,
     ExchangeRateTable,
@@ -35,6 +38,8 @@ from backend.reasoning.schemas import (
 )
 
 __all__ = [
+    "AliasConfig",
+    "AmbiguousEntityCandidate",
     "CLASSIFIER_VERSION",
     "CONFIDENCE_VERSION",
     "ClassificationDecision",
@@ -52,6 +57,8 @@ __all__ = [
     "block_relationship_candidates",
     "canonicalize_predicate",
     "classify_relationship",
+    "find_ambiguous_entity_candidates",
+    "load_alias_config",
     "normalize_entity_name",
     "normalize_fact",
     "normalize_value",

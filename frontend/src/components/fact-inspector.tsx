@@ -36,11 +36,13 @@ export function FactInspector({ fact, label }: { fact: Fact; label?: string }) {
         <StatusBadge status={evidence.status} />
       </header>
 
-      <dl className="grid grid-cols-2 border-b border-border bg-surface-low sm:grid-cols-4">
+      <dl className="grid grid-cols-2 border-b border-border bg-surface-low sm:grid-cols-3">
         <Field label="Value" value={fact.value} />
         <Field label="Unit" value={fact.unit} />
         <Field label="Currency" value={fact.currency} />
         <Field label="Temporal scope" value={fact.temporal_scope} />
+        <Field label="Reporting scope" value={fact.scope} />
+        <Field label="Data vintage" value={fact.data_vintage} />
       </dl>
 
       <div className="grid border-b border-border sm:grid-cols-2">

@@ -88,12 +88,14 @@ def test_required_classifier_outcomes_have_complete_ordered_traces(
     decision = classify_relationship(left, right)
 
     assert decision.classification is expected
-    assert [step.order for step in decision.reasoning_trace] == list(range(1, 8))
+    assert [step.order for step in decision.reasoning_trace] == list(range(1, 10))
     assert [step.check for step in decision.reasoning_trace] == [
         "same_entity",
         "same_predicate",
         "normalized_value_equality",
+        "rounding",
         "time_period",
+        "data_vintage",
         "unit",
         "currency",
         "scope",

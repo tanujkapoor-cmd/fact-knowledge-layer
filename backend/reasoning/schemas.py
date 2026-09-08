@@ -49,6 +49,8 @@ class ReconciliationReason(StrEnum):
     UNIT = "unit"
     CURRENCY = "currency"
     SCOPE = "scope"
+    DATA_VINTAGE = "data_vintage"
+    ROUNDING = "rounding"
 
 
 class EntityNormalization(ReasoningModel):
@@ -104,6 +106,7 @@ class NormalizedValue(ReasoningModel):
     canonical_currency: str | None = None
     currency_conversion_rate: Decimal | None = None
     exchange_rate_date: date | None = None
+    rounding_quantum: Decimal | None = None
 
     @model_validator(mode="after")
     def validate_value_kind(self) -> Self:
@@ -146,6 +149,7 @@ class NormalizedFact(ReasoningModel):
     value: NormalizedValue
     temporal_scope: NormalizedTemporalScope | None = None
     scope: str | None = None
+    data_vintage: NormalizedTemporalScope | None = None
 
 
 class RelationshipCandidate(ReasoningModel):
@@ -153,6 +157,17 @@ class RelationshipCandidate(ReasoningModel):
 
     fact_a: NormalizedFact
     fact_b: NormalizedFact
+    entity_match_resolved: bool = False
+    entity_similarity: float | None = Field(default=None, ge=0.0, le=1.0)
+
+
+class AmbiguousEntityCandidate(ReasoningModel):
+    """A bounded, predicate-compatible entity pair requiring one tie-break."""
+
+    pair_id: NonEmptyText
+    fact_a: NormalizedFact
+    fact_b: NormalizedFact
+    similarity: float = Field(ge=0.0, le=1.0)
 
 
 class ClassificationDecision(ReasoningModel):

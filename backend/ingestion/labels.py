@@ -23,7 +23,12 @@ class _LabelCandidate:
 
 
 def _label_from_text(text: str) -> str | None:
-    cleaned = text.strip().strip("-–—|·•()[]")
+    stripped = text.strip()
+    if (stripped.startswith("(") and stripped.endswith(")")) or (
+        stripped.startswith("[") and stripped.endswith("]")
+    ):
+        return None
+    cleaned = stripped.strip("-–—|·•")
     match = _PAGE_LABEL_PATTERN.fullmatch(cleaned)
     return match.group("label") if match else None
 
@@ -99,8 +104,15 @@ def detect_visible_page_label(page: pymupdf.Page) -> str | None:
 
         boundary_labels = [label for label in boundary_labels if not _is_likely_year(label)]
         if boundary_labels:
-            value = "–".join(boundary_labels)
-            candidates.append(_LabelCandidate(value, 3, edge_distance))
+            if len(boundary_labels) == 2:
+                left, right = boundary_labels
+                consecutive_spread = (
+                    left.isdigit() and right.isdigit() and int(right) == int(left) + 1
+                )
+                if consecutive_spread:
+                    candidates.append(_LabelCandidate(f"{left}–{right}", 3, edge_distance))
+                continue
+            candidates.append(_LabelCandidate(boundary_labels[0], 3, edge_distance))
 
     if not candidates:
         return None

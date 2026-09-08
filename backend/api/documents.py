@@ -29,6 +29,7 @@ async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile,
     session: SessionDependency,
+    retry_failed: bool = False,
 ) -> DocumentUploadResponse:
     """Queue a PDF once; matching SHA-256 uploads reuse their existing work."""
 
@@ -48,29 +49,39 @@ async def upload_document(
     repository = KnowledgeRepository(session)
     existing = repository.find_document_by_hash(digest)
     if existing:
-        return DocumentUploadResponse(
-            id=existing.id,
-            file_name=existing.file_name,
-            sha256=existing.sha256,
-            status=existing.status,
-            duplicate_reused=True,
-        )
+        if retry_failed and existing.status == "failed":
+            document = repository.prepare_document_retry(existing.id)
+            document.file_name = file_name
+            session.commit()
+            retry_started = True
+        else:
+            return DocumentUploadResponse(
+                id=existing.id,
+                file_name=existing.file_name,
+                sha256=existing.sha256,
+                status=existing.status,
+                duplicate_reused=True,
+                retry_started=False,
+            )
+    else:
+        retry_started = False
 
-    try:
-        document = repository.create_document(file_name, digest)
-        session.commit()
-    except IntegrityError:
-        session.rollback()
-        existing = repository.find_document_by_hash(digest)
-        if existing is None:
-            raise
-        return DocumentUploadResponse(
-            id=existing.id,
-            file_name=existing.file_name,
-            sha256=existing.sha256,
-            status=existing.status,
-            duplicate_reused=True,
-        )
+        try:
+            document = repository.create_document(file_name, digest)
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            existing = repository.find_document_by_hash(digest)
+            if existing is None:
+                raise
+            return DocumentUploadResponse(
+                id=existing.id,
+                file_name=existing.file_name,
+                sha256=existing.sha256,
+                status=existing.status,
+                duplicate_reused=True,
+                retry_started=False,
+            )
 
     document_id = UUID(document.id)
     request.app.state.processing_status[document.id] = {
@@ -90,6 +101,7 @@ async def upload_document(
         sha256=digest,
         status=document.status,
         duplicate_reused=False,
+        retry_started=retry_started,
     )
 
 

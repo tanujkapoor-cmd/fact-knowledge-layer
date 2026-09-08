@@ -30,6 +30,8 @@ class FactCandidate(ExtractionModel):
     unit: OptionalCleanText
     currency: OptionalCleanText
     temporal_scope: OptionalCleanText
+    scope: OptionalCleanText
+    data_vintage: OptionalCleanText
     evidence_quote: str = Field(min_length=1)
     page_number: int = Field(ge=1)
 
@@ -45,6 +47,19 @@ class AdapterExtractionResult(ExtractionModel):
 
     candidates: list[FactCandidate]
     request_id: str | None = None
+    attempt_count: int = Field(default=1, ge=1)
+
+
+class EntityMatchDecision(ExtractionModel):
+    """LLM tie-break result; it can match entities but cannot classify facts."""
+
+    pair_id: NonEmptyText
+    same_entity: bool
+    explanation: NonEmptyText
+
+
+class EntityMatchBatch(ExtractionModel):
+    decisions: list[EntityMatchDecision]
 
 
 class EvidenceMatchMethod(StrEnum):
@@ -108,4 +123,15 @@ class ExtractionRun(ExtractionModel):
     model: NonEmptyText
     prompt_version: NonEmptyText
     request_ids: list[str] = Field(default_factory=list)
+    provider_attempts: int = Field(default=0, ge=0)
     facts: list[ExtractedFactRecord]
+
+
+class ExtractionCheckpoint(ExtractionModel):
+    """Durable progress emitted after one complete page batch."""
+
+    completed_pages: int = Field(ge=0)
+    total_pages: int = Field(ge=1)
+    completed_batches: int = Field(ge=0)
+    facts_seen: int = Field(ge=0)
+    provider_attempts: int = Field(ge=0)

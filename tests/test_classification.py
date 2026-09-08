@@ -13,6 +13,7 @@ from backend.reasoning import (
     ReconciliationReason,
     block_relationship_candidates,
     classify_relationship,
+    find_ambiguous_entity_candidates,
     normalize_fact,
 )
 
@@ -29,6 +30,7 @@ def _fact(
     document_id=None,
     target_currency: str | None = None,
     rates: ExchangeRateTable | None = None,
+    data_vintage: str | None = None,
 ):
     source = SimpleNamespace(
         id=uuid4(),
@@ -40,6 +42,7 @@ def _fact(
         currency=currency,
         temporal_scope=time,
         scope=scope,
+        data_vintage=data_vintage,
     )
     return normalize_fact(source, target_currency=target_currency, exchange_rates=rates)
 
@@ -49,7 +52,7 @@ def test_equal_normalized_facts_corroborate() -> None:
 
     assert decision.classification is RelationshipType.CORROBORATES
     assert decision.reconciliation_reasons == ()
-    assert [step.order for step in decision.reasoning_trace] == list(range(1, 8))
+    assert [step.order for step in decision.reasoning_trace] == list(range(1, 10))
 
 
 def test_same_context_with_different_values_contradicts() -> None:
@@ -100,6 +103,32 @@ def test_different_scopes_reconcile_different_values() -> None:
     assert decision.reconciliation_reasons == (ReconciliationReason.SCOPE,)
 
 
+def test_different_data_vintages_reconcile_different_values() -> None:
+    decision = classify_relationship(
+        _fact("6.4", data_vintage="as of 30 April 2024"),
+        _fact("6.5", data_vintage="as of 31 May 2024"),
+    )
+
+    assert decision.classification is RelationshipType.RECONCILED
+    assert decision.reconciliation_reasons == (ReconciliationReason.DATA_VINTAGE,)
+
+
+def test_overlapping_written_precision_reconciles_rounding() -> None:
+    decision = classify_relationship(
+        _fact("12.7", unit="percent"),
+        _fact("13", unit="percent"),
+    )
+
+    assert decision.classification is RelationshipType.RECONCILED
+    assert decision.reconciliation_reasons == (ReconciliationReason.ROUNDING,)
+
+
+def test_equal_precision_does_not_hide_a_real_difference_as_rounding() -> None:
+    decision = classify_relationship(_fact("100"), _fact("101"))
+
+    assert decision.classification is RelationshipType.CONTRADICTS
+
+
 def test_incompatible_units_are_uncertain() -> None:
     decision = classify_relationship(
         _fact("1", unit="kilometre"),
@@ -131,6 +160,30 @@ def test_candidate_blocking_uses_entity_predicate_and_cross_document() -> None:
 
     assert len(candidates) == 2
     assert all(pair.fact_a.document_id != pair.fact_b.document_id for pair in candidates)
+
+
+def test_ambiguous_entity_candidates_are_bounded_and_require_explicit_resolution() -> None:
+    facts = [
+        _fact("100", entity="Acme Logistics", document_id=uuid4()),
+        _fact("100", entity="Acme Logistic", document_id=uuid4()),
+        _fact("100", entity="Completely Different", document_id=uuid4()),
+    ]
+
+    ambiguous = find_ambiguous_entity_candidates(facts, max_pairs=1)
+    assert len(ambiguous) == 1
+    resolved = block_relationship_candidates(
+        facts,
+        resolved_entity_pair_ids={ambiguous[0].pair_id},
+        entity_similarities={ambiguous[0].pair_id: ambiguous[0].similarity},
+    )
+    decision = classify_relationship(
+        resolved[0].fact_a,
+        resolved[0].fact_b,
+        entity_match_resolved=resolved[0].entity_match_resolved,
+    )
+
+    assert decision.classification is RelationshipType.CORROBORATES
+    assert decision.reasoning_trace[0].details["match_method"] == "bounded_llm_tiebreak"
 
 
 def test_classifier_module_has_no_llm_sdk_imports() -> None:

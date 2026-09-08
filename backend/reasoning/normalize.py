@@ -40,6 +40,8 @@ class NormalizableFact(Protocol):
     unit: str | None
     currency: str | None
     temporal_scope: Any
+    scope: str | None
+    data_vintage: Any
 
 
 @dataclass(frozen=True, slots=True)
@@ -277,6 +279,17 @@ def _parse_number(value: str) -> Decimal | None:
     return number
 
 
+def _numeric_quantum(value: str) -> Decimal | None:
+    """Return the resolution implied by the written numeric literal."""
+
+    match = _NUMBER_PATTERN.search(value)
+    if not match:
+        return None
+    literal = match.group("number").replace(",", "")
+    decimal_places = len(literal.partition(".")[2]) if "." in literal else 0
+    return Decimal(1).scaleb(-decimal_places)
+
+
 def _normalized_unit_text(unit: str | None) -> str | None:
     if not unit or not unit.strip():
         return None
@@ -330,6 +343,7 @@ def normalize_value(
     """Normalize numeric scale, unit, and optional currency conversion."""
 
     numeric_value = _parse_number(value)
+    numeric_quantum = _numeric_quantum(value)
     source_currency = _canonical_currency(currency, value)
     scale_name, scale_factor = _find_scale(value, unit)
     _, unit_spec = _find_unit(value, unit, scale_name)
@@ -348,6 +362,9 @@ def normalize_value(
         )
 
     normalized_number = numeric_value * scale_factor * unit_spec.factor
+    rounding_quantum = (
+        numeric_quantum * scale_factor * unit_spec.factor if numeric_quantum else None
+    )
     canonical_currency = source_currency
     currency_rate: Decimal | None = None
     exchange_rate_date: date | None = None
@@ -370,6 +387,8 @@ def normalize_value(
                 )
             currency_rate = source_rate / target_rate
             normalized_number *= currency_rate
+            if rounding_quantum is not None:
+                rounding_quantum *= currency_rate
             exchange_rate_date = exchange_rates.as_of_date
         canonical_currency = target
 
@@ -387,6 +406,7 @@ def normalize_value(
         canonical_currency=canonical_currency,
         currency_conversion_rate=currency_rate,
         exchange_rate_date=exchange_rate_date,
+        rounding_quantum=rounding_quantum,
     )
 
 
@@ -601,6 +621,22 @@ def normalize_fact(
             else None
         )
 
+    raw_data_vintage = getattr(fact, "data_vintage", None)
+    if raw_data_vintage is None:
+        normalized_data_vintage = None
+    elif isinstance(raw_data_vintage, str):
+        normalized_data_vintage = parse_date_range(
+            raw_data_vintage,
+            fiscal_year_start_month=fiscal_year_start_month,
+        )
+    else:
+        vintage_text = getattr(raw_data_vintage, "raw_text", None)
+        normalized_data_vintage = (
+            parse_date_range(vintage_text, fiscal_year_start_month=fiscal_year_start_month)
+            if vintage_text
+            else None
+        )
+
     return NormalizedFact(
         fact_id=getattr(fact, "id", None),
         document_id=getattr(fact, "document_id", None),
@@ -616,4 +652,5 @@ def normalize_fact(
         ),
         temporal_scope=normalized_temporal_scope,
         scope=getattr(fact, "scope", None),
+        data_vintage=normalized_data_vintage,
     )

@@ -36,6 +36,7 @@ class DocumentUploadResponse(ApiModel):
     sha256: str
     status: DocumentStatus
     duplicate_reused: bool
+    retry_started: bool = False
 
 
 class DocumentStatusResponse(ApiModel):
@@ -46,6 +47,11 @@ class DocumentStatusResponse(ApiModel):
     created_at: datetime
     page_count: int | None = None
     failure_reason: str | None = None
+    processed_page_count: int = 0
+    extraction_batch_count: int = 0
+    provider_attempt_count: int = 0
+    retry_count: int = 0
+    last_checkpoint_at: datetime | None = None
 
 
 class VerificationDetailsResponse(ApiModel):
@@ -62,6 +68,8 @@ class FactResponse(ApiModel):
     unit: str | None = None
     currency: str | None = None
     temporal_scope: str | None = None
+    scope: str | None = None
+    data_vintage: str | None = None
     evidence: EvidenceReference
     verification: VerificationDetailsResponse
     confidence: FactConfidence

@@ -6,6 +6,7 @@ import pymupdf
 from fastapi.testclient import TestClient
 
 from backend.extraction import AdapterExtractionResult, FactCandidate
+from backend.extraction.errors import LlmExtractionError
 from backend.ingestion import ParsedPage
 
 
@@ -39,6 +40,8 @@ class ContentAwareAdapter:
                     unit=None,
                     currency=None,
                     temporal_scope="FY2024",
+                    scope=None,
+                    data_vintage=None,
                     evidence_quote=quote,
                     page_number=pages[0].physical_page_number,
                 )
@@ -70,6 +73,9 @@ def test_upload_to_relationship_workflow_persists_grounded_responses(client: Tes
     first_id = first_upload.json()["id"]
     second_id = second_upload.json()["id"]
     assert client.get(f"/documents/{first_id}").json()["status"] == "completed"
+    status_payload = client.get(f"/documents/{first_id}").json()
+    assert status_payload["processed_page_count"] == 1
+    assert status_payload["extraction_batch_count"] == 1
     facts = client.get(f"/documents/{first_id}/facts").json()
     assert facts[0]["evidence"]["quote"] == "Acme revenue was 100 in FY2024."
     assert facts[0]["evidence"]["start_offset"] == 0
@@ -80,7 +86,7 @@ def test_upload_to_relationship_workflow_persists_grounded_responses(client: Tes
     assert len(relationships) == 1
     assert relationships[0]["classification"] == "contradicts"
     assert relationships[0]["classification_confidence"]["value"] == 1.0
-    assert len(relationships[0]["reasoning_trace"]) == 7
+    assert len(relationships[0]["reasoning_trace"]) == 9
     assert {
         relationships[0]["fact_a"]["document_id"],
         relationships[0]["fact_b"]["document_id"],
@@ -153,6 +159,34 @@ def test_failed_evidence_never_enters_relationship_classification(client: TestCl
     assert verified_facts[0]["classification_eligible"] is True
     assert failed_facts[0]["classification_eligible"] is False
     assert client.get("/relationships").json() == []
+
+
+def test_failed_duplicate_can_be_retried_with_same_document_identity(
+    client: TestClient,
+) -> None:
+    payload = _pdf_bytes("Acme revenue was 100 in FY2024.")
+
+    class FailingAdapter(ContentAwareAdapter):
+        def extract_facts(self, pages: list[ParsedPage]) -> AdapterExtractionResult:
+            raise LlmExtractionError("temporary provider failure")
+
+    client.app.state.extraction_adapter_factory = FailingAdapter
+    first = client.post("/documents", files={"file": ("retry.pdf", payload, "application/pdf")})
+    document_id = first.json()["id"]
+    assert client.get(f"/documents/{document_id}").json()["status"] == "failed"
+
+    client.app.state.extraction_adapter_factory = ContentAwareAdapter
+    retry = client.post(
+        "/documents?retry_failed=true",
+        files={"file": ("retry.pdf", payload, "application/pdf")},
+    )
+
+    assert retry.json()["id"] == document_id
+    assert retry.json()["retry_started"] is True
+    final_status = client.get(f"/documents/{document_id}").json()
+    assert final_status["status"] == "completed"
+    assert final_status["retry_count"] == 1
+    assert len(client.get(f"/documents/{document_id}/facts").json()) == 1
 
 
 def test_invalid_pdf_and_unknown_document_return_honest_states(client: TestClient) -> None:

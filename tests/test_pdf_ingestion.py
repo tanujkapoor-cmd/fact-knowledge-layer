@@ -107,6 +107,21 @@ def test_parser_does_not_treat_body_numbers_as_page_labels() -> None:
     assert parsed.pages[0].page_label_source is None
 
 
+def test_parser_ignores_parenthesized_footer_notes_when_page_label_is_present() -> None:
+    document = pymupdf.open()
+    page = document.new_page(width=1200, height=675)
+    page.insert_text((72, 72), "Performance summary")
+    page.insert_text((50, 655), "(1)")
+    page.insert_text((80, 655), "Source note")
+    page.insert_text((1130, 655), "8")
+    payload = document.tobytes()
+    document.close()
+
+    parsed = PdfParser().parse_bytes(payload)
+
+    assert parsed.pages[0].printed_page_label == "8"
+
+
 def test_file_and_byte_entry_points_return_the_same_content(tmp_path) -> None:
     payload = _make_pdf(["A reusable parser must not depend on a file name."])
     pdf_path = tmp_path / "unseen-document.pdf"

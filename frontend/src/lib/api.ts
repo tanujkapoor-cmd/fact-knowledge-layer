@@ -51,10 +51,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   health: () => request<HealthResponse>("/health"),
 
-  uploadDocument: (file: File) => {
+  uploadDocument: (file: File, retryFailed = false) => {
     const body = new FormData()
     body.append("file", file)
-    return request<DocumentUploadResponse>("/documents", { method: "POST", body })
+    const query = retryFailed ? "?retry_failed=true" : ""
+    return request<DocumentUploadResponse>(`/documents${query}`, { method: "POST", body })
   },
 
   documentStatus: (documentId: string) =>

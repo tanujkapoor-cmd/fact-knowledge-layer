@@ -48,6 +48,8 @@ export interface Fact {
   unit: string | null
   currency: string | null
   temporal_scope: string | null
+  scope: string | null
+  data_vintage: string | null
   evidence: EvidenceReference
   verification: {
     method: string
@@ -80,6 +82,7 @@ export interface DocumentUploadResponse {
   sha256: string
   status: DocumentStatus
   duplicate_reused: boolean
+  retry_started: boolean
 }
 
 export interface DocumentStatusResponse {
@@ -90,10 +93,15 @@ export interface DocumentStatusResponse {
   created_at: string
   page_count: number | null
   failure_reason: string | null
+  processed_page_count: number
+  extraction_batch_count: number
+  provider_attempt_count: number
+  retry_count: number
+  last_checkpoint_at: string | null
 }
 
 export type TrackedDocument = DocumentUploadResponse &
-  Partial<Pick<DocumentStatusResponse, "created_at" | "page_count" | "failure_reason">>
+  Partial<Omit<DocumentStatusResponse, "id" | "file_name" | "sha256" | "status">>
 
 export interface HealthResponse {
   status: "ok"

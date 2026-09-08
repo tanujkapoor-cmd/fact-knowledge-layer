@@ -196,6 +196,8 @@ def test_normalize_fact_composes_all_pure_normalizers() -> None:
         unit="crore",
         currency="INR",
         temporal_scope="FY2024",
+        scope=None,
+        data_vintage=None,
         evidence_quote="Delhivery reported total income of INR 100 crore in FY2024.",
         page_number=1,
     )
