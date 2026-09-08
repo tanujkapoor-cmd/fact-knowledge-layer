@@ -95,17 +95,16 @@ export function RelationshipsView({
   }
 
   return (
-    <div className="space-y-6">
-      <header className="max-w-3xl">
-        <p className="eyebrow">03 / Decision audit</p>
-        <h1 className="page-title">See exactly why two facts agree—or do not.</h1>
+    <div className="space-y-4">
+      <header className="max-w-3xl border-b border-border pb-4">
+        <h1 className="page-title">Relationship decision audit</h1>
         <p className="page-description">
           Classification is deterministic. The interface exposes the ordered checks, both source
           facts, and any context that reconciles a difference.
         </p>
       </header>
 
-      <Card>
+      <Card className="bg-card">
         <CardContent className="grid gap-4 p-4 lg:grid-cols-[0.8fr_1fr_1.4fr_auto] lg:items-end">
           <label className="space-y-2">
             <span className="field-label">Decision type</span>
@@ -165,7 +164,7 @@ export function RelationshipsView({
       </Card>
 
       {error ? (
-        <div role="alert" className="rounded-xl border border-rose-400/25 bg-rose-400/7 p-4 text-sm text-rose-200">
+        <div role="alert" className="border border-red-700/30 bg-red-50 p-4 text-sm text-red-800">
           {error}
         </div>
       ) : null}
@@ -186,10 +185,9 @@ export function RelationshipsView({
         />
       ) : (
         <div className="grid gap-4 xl:grid-cols-[minmax(300px,0.72fr)_minmax(0,1.5fr)]">
-          <Card className="h-fit bg-card/70">
+          <Card className="h-fit">
             <div className="flex items-center justify-between border-b border-border p-4">
               <div>
-                <p className="eyebrow">Decision index</p>
                 <h2 className="text-sm font-semibold">{relationships.length} relationships</h2>
               </div>
               <Button
@@ -208,7 +206,7 @@ export function RelationshipsView({
                   key={relationship.id}
                   type="button"
                   className={cn(
-                    "w-full cursor-pointer rounded-lg border border-transparent p-3 text-left outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring",
+                    "w-full cursor-pointer rounded-[3px] border border-transparent p-3 text-left outline-none transition-colors hover:bg-surface-low focus-visible:ring-2 focus-visible:ring-ring",
                     selectedRelationship?.id === relationship.id && "border-border bg-secondary",
                   )}
                   aria-pressed={selectedRelationship?.id === relationship.id}
@@ -237,7 +235,6 @@ export function RelationshipsView({
             <Card className="overflow-hidden">
               <div className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="eyebrow">Deterministic outcome</p>
                   <div className="mt-1 flex flex-wrap items-center gap-3">
                     <h2 className="text-xl font-semibold tracking-tight">
                       {sentenceCase(selectedRelationship.classification)}
@@ -271,7 +268,7 @@ export function RelationshipsView({
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="trace">
-                  <div className="mt-2 overflow-hidden rounded-xl border border-border">
+                  <div className="mt-2 overflow-hidden rounded-[3px] border border-border">
                     <div className="hidden grid-cols-[56px_1fr_120px_1.5fr] gap-3 border-b border-border bg-background/55 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.1em] text-slate-500 md:grid">
                       <span>Order</span>
                       <span>Check</span>
@@ -290,10 +287,10 @@ export function RelationshipsView({
                         <span
                           className={cn(
                             "w-fit font-mono text-[10px] uppercase tracking-[0.08em]",
-                            step.outcome === "passed" && "text-emerald-300",
-                            step.outcome === "failed" && "text-rose-300",
+                            step.outcome === "passed" && "text-emerald-800",
+                            step.outcome === "failed" && "text-red-800",
                             step.outcome === "skipped" && "text-slate-500",
-                            step.outcome === "judgment_required" && "text-amber-300",
+                            step.outcome === "judgment_required" && "text-amber-800",
                           )}
                         >
                           {sentenceCase(step.outcome)}

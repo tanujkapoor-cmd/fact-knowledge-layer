@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T01:06:15.3760493+05:30",
+  "title": "Design System: Fact Knowledge Layer",
+  "extensions": {
+    "colorMeta": {
+      "mineral-white": { "role": "neutral", "displayName": "Mineral White", "canonical": "#f4fafd", "tonalRamp": ["oklch(15% 0.01 220)", "oklch(27% 0.01 220)", "oklch(39% 0.01 220)", "oklch(51% 0.01 220)", "oklch(63% 0.01 220)", "oklch(75% 0.01 220)", "oklch(87% 0.01 220)", "oklch(95% 0.01 220)"] },
+      "graphite": { "role": "neutral", "displayName": "Graphite", "canonical": "#161d1f", "tonalRamp": ["oklch(15% 0.015 220)", "oklch(27% 0.015 220)", "oklch(39% 0.015 220)", "oklch(51% 0.015 220)", "oklch(63% 0.015 220)", "oklch(75% 0.015 220)", "oklch(87% 0.015 220)", "oklch(95% 0.015 220)"] },
+      "paper-white": { "role": "neutral", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(63% 0 0)", "oklch(75% 0 0)", "oklch(87% 0 0)", "oklch(95% 0 0)"] },
+      "deep-ink": { "role": "primary", "displayName": "Deep Ink", "canonical": "#162839", "tonalRamp": ["oklch(15% 0.04 245)", "oklch(27% 0.04 245)", "oklch(39% 0.04 245)", "oklch(51% 0.04 245)", "oklch(63% 0.04 245)", "oklch(75% 0.04 245)", "oklch(87% 0.04 245)", "oklch(95% 0.04 245)"] },
+      "deep-ink-hover": { "role": "primary", "displayName": "Ink Hover", "canonical": "#2c3e50", "tonalRamp": ["oklch(15% 0.04 245)", "oklch(27% 0.04 245)", "oklch(39% 0.04 245)", "oklch(51% 0.04 245)", "oklch(63% 0.04 245)", "oklch(75% 0.04 245)", "oklch(87% 0.04 245)", "oklch(95% 0.04 245)"] },
+      "cool-aqua": { "role": "neutral", "displayName": "Cool Aqua", "canonical": "#e8eff1", "tonalRamp": ["oklch(15% 0.015 210)", "oklch(27% 0.015 210)", "oklch(39% 0.015 210)", "oklch(51% 0.015 210)", "oklch(63% 0.015 210)", "oklch(75% 0.015 210)", "oklch(87% 0.015 210)", "oklch(95% 0.015 210)"] },
+      "cool-muted": { "role": "neutral", "displayName": "Cool Muted", "canonical": "#dde4e6", "tonalRamp": ["oklch(15% 0.015 210)", "oklch(27% 0.015 210)", "oklch(39% 0.015 210)", "oklch(51% 0.015 210)", "oklch(63% 0.015 210)", "oklch(75% 0.015 210)", "oklch(87% 0.015 210)", "oklch(95% 0.015 210)"] },
+      "muted-graphite": { "role": "neutral", "displayName": "Muted Graphite", "canonical": "#4b565b", "tonalRamp": ["oklch(15% 0.02 220)", "oklch(27% 0.02 220)", "oklch(39% 0.02 220)", "oklch(51% 0.02 220)", "oklch(63% 0.02 220)", "oklch(75% 0.02 220)", "oklch(87% 0.02 220)", "oklch(95% 0.02 220)"] },
+      "institutional-green": { "role": "secondary", "displayName": "Institutional Green", "canonical": "#006b55", "tonalRamp": ["oklch(15% 0.1 165)", "oklch(27% 0.1 165)", "oklch(39% 0.1 165)", "oklch(51% 0.1 165)", "oklch(63% 0.1 165)", "oklch(75% 0.1 165)", "oklch(87% 0.1 165)", "oklch(95% 0.1 165)"] },
+      "verification-green": { "role": "secondary", "displayName": "Verification Green", "canonical": "#00765e", "tonalRamp": ["oklch(15% 0.11 165)", "oklch(27% 0.11 165)", "oklch(39% 0.11 165)", "oklch(51% 0.11 165)", "oklch(63% 0.11 165)", "oklch(75% 0.11 165)", "oklch(87% 0.11 165)", "oklch(95% 0.11 165)"] },
+      "exception-amber": { "role": "tertiary", "displayName": "Exception Amber", "canonical": "#806600", "tonalRamp": ["oklch(15% 0.1 90)", "oklch(27% 0.1 90)", "oklch(39% 0.1 90)", "oklch(51% 0.1 90)", "oklch(63% 0.1 90)", "oklch(75% 0.1 90)", "oklch(87% 0.1 90)", "oklch(95% 0.1 90)"] },
+      "alert-red": { "role": "tertiary", "displayName": "Alert Red", "canonical": "#ba1a1a", "tonalRamp": ["oklch(15% 0.2 28)", "oklch(27% 0.2 28)", "oklch(39% 0.2 28)", "oklch(51% 0.2 28)", "oklch(63% 0.2 28)", "oklch(75% 0.2 28)", "oklch(87% 0.2 28)", "oklch(95% 0.2 28)"] },
+      "hairline": { "role": "neutral", "displayName": "Hairline Gray", "canonical": "#c4c6cd", "tonalRamp": ["oklch(15% 0.015 250)", "oklch(27% 0.015 250)", "oklch(39% 0.015 250)", "oklch(51% 0.015 250)", "oklch(63% 0.015 250)", "oklch(75% 0.015 250)", "oklch(87% 0.015 250)", "oklch(95% 0.015 250)"] },
+      "input-stroke": { "role": "neutral", "displayName": "Input Stroke", "canonical": "#9299a0", "tonalRamp": ["oklch(15% 0.02 230)", "oklch(27% 0.02 230)", "oklch(39% 0.02 230)", "oklch(51% 0.02 230)", "oklch(63% 0.02 230)", "oklch(75% 0.02 230)", "oklch(87% 0.02 230)", "oklch(95% 0.02 230)"] },
+      "surface-low": { "role": "neutral", "displayName": "Low Surface", "canonical": "#eef5f7", "tonalRamp": ["oklch(15% 0.012 210)", "oklch(27% 0.012 210)", "oklch(39% 0.012 210)", "oklch(51% 0.012 210)", "oklch(63% 0.012 210)", "oklch(75% 0.012 210)", "oklch(87% 0.012 210)", "oklch(95% 0.012 210)"] },
+      "surface-high": { "role": "neutral", "displayName": "High Surface", "canonical": "#e2e9ec", "tonalRamp": ["oklch(15% 0.012 210)", "oklch(27% 0.012 210)", "oklch(39% 0.012 210)", "oklch(51% 0.012 210)", "oklch(63% 0.012 210)", "oklch(75% 0.012 210)", "oklch(87% 0.012 210)", "oklch(95% 0.012 210)"] },
+      "selected-evidence": { "role": "secondary", "displayName": "Selected Evidence Wash", "canonical": "#e7f3ef", "tonalRamp": ["oklch(15% 0.025 165)", "oklch(27% 0.025 165)", "oklch(39% 0.025 165)", "oklch(51% 0.025 165)", "oklch(63% 0.025 165)", "oklch(75% 0.025 165)", "oklch(87% 0.025 165)", "oklch(95% 0.025 165)"] },
+      "quote-paper": { "role": "neutral", "displayName": "Quote Paper", "canonical": "#fffef8", "tonalRamp": ["oklch(15% 0.015 90)", "oklch(27% 0.015 90)", "oklch(39% 0.015 90)", "oklch(51% 0.015 90)", "oklch(63% 0.015 90)", "oklch(75% 0.015 90)", "oklch(87% 0.015 90)", "oklch(95% 0.015 90)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Task Display", "purpose": "Compact page-level task framing, never marketing-scale." },
+      "headline": { "displayName": "Record Headline", "purpose": "Decision classifications and major record summaries." },
+      "title": { "displayName": "Exhibit Title", "purpose": "Exhibit subjects, card titles, and section headings." },
+      "body": { "displayName": "Working Body", "purpose": "Descriptions, controls, and recovered source evidence." },
+      "label": { "displayName": "Evidence Label", "purpose": "Indices, metadata, table headings, and reproducible states." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "state-color", "value": "150ms", "purpose": "Fast color response for buttons, navigation, and ledger rows." },
+      { "name": "task-view", "value": "200ms ease-out", "purpose": "Short opacity and vertical transition between mobile task views." },
+      { "name": "progress-width", "value": "300ms", "purpose": "Measured progress changes without decorative motion." },
+      { "name": "reduced-motion", "value": "0.01ms", "purpose": "Collapses transitions and animations when reduced motion is requested." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The decisive action for loading, registering, or advancing evidence work.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">LOAD LEDGER</button>",
+      "css": ".ds-btn-primary { min-height: 40px; padding: 8px 16px; border: 1px solid var(--primary); border-radius: 4px; background: var(--primary); color: var(--primary-foreground); font: 600 14px/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-primary:hover { background: #2c3e50; } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; } .ds-btn-primary:active { background: var(--primary); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A flat secondary action for choosing files or invoking supporting controls.",
+      "html": "<button class=\"ds-btn-outline\" type=\"button\">CHOOSE SOURCE PDF</button>",
+      "css": ".ds-btn-outline { min-height: 40px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--foreground); font: 600 14px/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-outline:hover { border-color: var(--primary); background: var(--surface-low); } .ds-btn-outline:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; } .ds-btn-outline:active { background: var(--surface-high); }"
+    },
+    {
+      "name": "Document Identifier Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A compact editable field for reproducible document identifiers.",
+      "html": "<input class=\"ds-input-id\" type=\"text\" value=\"4be2d16a-…\" aria-label=\"Document identifier\">",
+      "css": ".ds-input-id { width: 100%; min-height: 40px; padding: 8px 12px; border: 1px solid var(--input); border-radius: 3px; background: var(--card); color: var(--foreground); font: 400 12px/1.4 \"JetBrains Mono\", ui-monospace, monospace; transition: border-color 150ms; } .ds-input-id:hover { border-color: var(--muted-foreground); } .ds-input-id:focus-visible { border-color: var(--primary); outline: 2px solid color-mix(in srgb, var(--ring) 20%, transparent); outline-offset: 0; }"
+    },
+    {
+      "name": "Active Task Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-active",
+      "description": "The ruled task switcher used for Documents, Fact ledger, and Audit log.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary navigation\"><button class=\"ds-nav-item ds-nav-item-active\" type=\"button\">FACT LEDGER</button><button class=\"ds-nav-item\" type=\"button\">AUDIT LOG</button></nav>",
+      "css": ".ds-nav { display: flex; min-width: 0; border: 1px solid var(--border); background: var(--card); } .ds-nav-item { position: relative; min-height: 44px; padding: 0 16px; border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--muted-foreground); font: 600 12px/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-nav-item:hover { background: var(--surface-low); color: var(--foreground); } .ds-nav-item:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; } .ds-nav-item-active { background: var(--card); color: var(--foreground); } .ds-nav-item-active::after { content: \"\"; position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: var(--primary); }"
+    },
+    {
+      "name": "Verified Status Badge",
+      "kind": "chip",
+      "refersTo": "status-badge",
+      "description": "A compact, redundant status mark for verified evidence and completed work.",
+      "html": "<span class=\"ds-status-success\"><span class=\"ds-status-dot\" aria-hidden=\"true\"></span>VERIFIED</span>",
+      "css": ".ds-status-success { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--verify) 30%, transparent); border-radius: 2px; background: #ecfdf5; color: #065f46; font: 600 10px/1.4 \"JetBrains Mono\", ui-monospace, monospace; letter-spacing: 0.03em; } .ds-status-dot { width: 6px; height: 6px; background: currentColor; border-radius: 50%; } .ds-status-success:hover { border-color: var(--verify); } .ds-status-success:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }"
+    },
+    {
+      "name": "Ledger Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The flat bordered container for grouped controls, ledger summaries, and evidence records.",
+      "html": "<section class=\"ds-card\"><header class=\"ds-card-header\">FACT SOURCE CONTROLS</header><div class=\"ds-card-body\">Choose a tracked source to load its evidence ledger.</div></section>",
+      "css": ".ds-card { overflow: hidden; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--foreground); } .ds-card-header { padding: 10px 13px; border-bottom: 1px solid var(--border); background: var(--surface-low); font: 600 10px/1.4 \"JetBrains Mono\", ui-monospace, monospace; letter-spacing: 0.07em; } .ds-card-body { padding: 20px; font: 400 14px/1.55 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-card:hover { border-color: var(--input); } .ds-card:focus-within { outline: 2px solid var(--ring); outline-offset: 1px; }"
+    },
+    {
+      "name": "Selected Ledger Row",
+      "kind": "custom",
+      "description": "The indexed fact row whose green rule and wash visibly bind it to the source exhibit.",
+      "html": "<button class=\"ds-ledger-row\" type=\"button\"><span class=\"ds-ledger-index\">E-03</span><span class=\"ds-ledger-copy\"><strong>Net revenue</strong><small>reported value · 84.2</small></span><span class=\"ds-ledger-status\">VERIFIED</span></button>",
+      "css": ".ds-ledger-row { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr) 80px; align-items: center; width: 100%; min-height: 54px; padding: 12px; border: 0; border-bottom: 1px solid var(--border); background: #e7f3ef; color: var(--foreground); text-align: left; cursor: pointer; transition: background-color 150ms; } .ds-ledger-row::before { content: \"\"; position: absolute; inset: 0 auto 0 0; width: 1px; background: var(--verify); } .ds-ledger-row:hover { background: var(--surface-low); } .ds-ledger-row:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; } .ds-ledger-index, .ds-ledger-status { color: var(--muted-foreground); font: 600 9px/1.3 \"JetBrains Mono\", ui-monospace, monospace; } .ds-ledger-copy { min-width: 0; padding-right: 8px; font: 400 12px/1.4 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-ledger-copy strong, .ds-ledger-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-ledger-copy small { margin-top: 2px; color: var(--muted-foreground); font-size: 11px; } .ds-ledger-status { color: var(--verify); }"
+    },
+    {
+      "name": "Source Evidence Exhibit",
+      "kind": "custom",
+      "refersTo": "exhibit-header",
+      "description": "The signature record that keeps the selected fact attached to the recovered source substring.",
+      "html": "<article class=\"ds-exhibit\"><header class=\"ds-exhibit-header\"><span>EXHIBIT 03 · 4BE2D16A</span><strong>Net revenue</strong><small>reported value</small></header><div class=\"ds-exhibit-meta\"><span>PHYSICAL PAGE 14</span><span>OFFSETS 328–402</span></div><blockquote class=\"ds-exhibit-quote\">“Net revenue increased to 84.2 million for the reporting period.”</blockquote></article>",
+      "css": ".ds-exhibit { overflow: hidden; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--foreground); } .ds-exhibit-header { display: grid; gap: 4px; padding: 12px 16px; border-bottom: 1px solid var(--primary); background: var(--primary); color: var(--primary-foreground); } .ds-exhibit-header span, .ds-exhibit-header small, .ds-exhibit-meta { font: 600 9px/1.4 \"JetBrains Mono\", ui-monospace, monospace; letter-spacing: 0.07em; } .ds-exhibit-header strong { font: 600 16px/1.35 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-exhibit-header small { color: #dbeafe; } .ds-exhibit-meta { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-low); } .ds-exhibit-meta span { padding: 8px 12px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); } .ds-exhibit-quote { position: relative; margin: 16px; padding: 20px; border: 1px solid var(--border); background: #fffef8; font: 400 14px/1.75 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-exhibit-quote::before { content: \"\"; position: absolute; inset: 0 auto 0 0; width: 1px; background: var(--verify); } .ds-exhibit:hover { border-color: var(--input); } .ds-exhibit:focus-within { outline: 2px solid var(--ring); outline-offset: 1px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Evidence Docket",
+    "overview": "Evidence Docket treats every selected fact as an indexed exhibit visibly bound to exact source evidence. The interface feels like a precise working record: mineral paper, deep ink title bands, hairline grids, compact metadata, and small verification marks establish authority without theatrical decoration.\n\nThe system is quiet, professional, and deliberately information-dense. One continuous evidence desk preserves the chain from source document to fact ledger, exhibit, and deterministic reasoning; it refuses the generic dashboard pattern of disconnected cards. On mobile, that same chain becomes explicit task tabs rather than a compressed desktop grid.",
+    "keyCharacteristics": [
+      "Mineral-white working surfaces with graphite text and deep-ink anchors.",
+      "Hairline grids and compact rows that make provenance relationships visible.",
+      "Workhorse sans typography paired with tabular mono metadata.",
+      "Verification green, exception amber, and alert red used as semantic evidence states.",
+      "Four-pixel core corners and flat, shadowless construction."
+    ],
+    "rules": [
+      { "name": "The Evidence Color Rule", "body": "Green means verified or actively bound, amber means exception or uncertainty, and red means failure or contradiction; color never decorates neutral structure.", "section": "colors" },
+      { "name": "The Ink Anchor Rule", "body": "Deep ink is reserved for headers, decisive actions, and record anchors so every use carries structural weight.", "section": "colors" },
+      { "name": "The Mono-Is-Evidence Rule", "body": "Use mono for values that can be indexed, compared, or reproduced; never use it for long explanations or source quotations.", "section": "typography" },
+      { "name": "The Docket Binding Rule", "body": "Keep source, claim, exhibit, and reasoning visibly adjacent on desktop; on mobile, preserve their order through task tabs rather than shrinking the full desk into an unreadable grid.", "section": "layout" },
+      { "name": "The Flat Record Rule", "body": "Never use ambient shadow to make evidence feel important; hierarchy must come from ink, paper, border, and placement.", "section": "elevation" },
+      { "name": "The Four-Pixel Ceiling Rule", "body": "Keep persistent workspace geometry at four pixels or less; rounded pills and soft dashboard bubbles do not belong in the docket.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep a selected fact visibly bound to its exact quote, page, offsets, verification state, and confidence.",
+      "Do use one-pixel grids, compact rows, and tonal bands to structure dense evidence.",
+      "Do reserve mono typography for identifiers, counts, hashes, offsets, tabular values, and reproducible states.",
+      "Do preserve the continuous evidence desk on desktop and the ordered task tabs on mobile.",
+      "Do pair every semantic color with text, a dot, a border, or another non-color cue."
+    ],
+    "donts": [
+      "Don't turn the product into a generic dashboard of disconnected cards.",
+      "Don't add shadows, glass effects, glow, gradients, or oversized pill shapes to core evidence surfaces.",
+      "Don't use verification green as decoration or let status color replace a readable label.",
+      "Don't separate a fact summary from the source exhibit needed to verify it.",
+      "Don't loosen the density until provenance relationships no longer fit in the working view."
+    ]
+  }
+}

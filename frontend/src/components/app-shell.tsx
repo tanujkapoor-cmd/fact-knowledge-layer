@@ -1,11 +1,12 @@
 import type { ReactNode } from "react"
 import {
+  Activity,
   ExternalLink,
+  FilePlus2,
   FileStack,
   GitCompareArrows,
   Layers3,
   ListTree,
-  Settings2,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -14,15 +15,10 @@ import { cn } from "@/lib/utils"
 export type ViewId = "documents" | "facts" | "relationships"
 
 const NAVIGATION = [
-  { id: "documents", label: "Documents", caption: "Ingest and track", icon: FileStack },
-  { id: "facts", label: "Fact ledger", caption: "Verify every claim", icon: ListTree },
-  {
-    id: "relationships",
-    label: "Relationships",
-    caption: "Audit each decision",
-    icon: GitCompareArrows,
-  },
-] satisfies Array<{ id: ViewId; label: string; caption: string; icon: typeof FileStack }>
+  { id: "documents", label: "Documents", icon: FileStack },
+  { id: "facts", label: "Fact ledger", icon: ListTree },
+  { id: "relationships", label: "Audit log", icon: GitCompareArrows },
+] satisfies Array<{ id: ViewId; label: string; icon: typeof FileStack }>
 
 interface AppShellProps {
   activeView: ViewId
@@ -32,20 +28,9 @@ interface AppShellProps {
   children: ReactNode
 }
 
-function Navigation({
-  activeView,
-  onViewChange,
-  compact = false,
-}: {
-  activeView: ViewId
-  onViewChange: (view: ViewId) => void
-  compact?: boolean
-}) {
+function Navigation({ activeView, onViewChange }: { activeView: ViewId; onViewChange: (view: ViewId) => void }) {
   return (
-    <nav
-      aria-label="Primary navigation"
-      className={cn("grid gap-1", compact && "grid-cols-3")}
-    >
+    <nav aria-label="Primary navigation" className="flex min-w-0 items-stretch">
       {NAVIGATION.map((item) => {
         const active = activeView === item.id
         return (
@@ -53,34 +38,15 @@ function Navigation({
             key={item.id}
             type="button"
             className={cn(
-              "group relative flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-              active
-                ? "bg-secondary text-foreground"
-                : "text-muted-foreground hover:bg-muted/55 hover:text-foreground",
-              compact && "min-w-0 justify-center px-2 sm:justify-start",
+              "relative flex min-h-11 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 border-x border-transparent px-2 text-[11px] font-semibold text-muted-foreground outline-none transition-colors hover:bg-surface-low hover:text-foreground focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring sm:min-h-14 sm:flex-none sm:justify-start sm:gap-2 sm:px-4 sm:text-xs",
+              active && "border-border bg-card text-foreground",
             )}
             aria-current={active ? "page" : undefined}
             onClick={() => onViewChange(item.id)}
           >
-            <span
-              className={cn(
-                "grid size-8 shrink-0 place-items-center rounded-md border transition-colors",
-                active
-                  ? "border-accent/25 bg-accent/8 text-accent"
-                  : "border-transparent text-slate-500 group-hover:text-slate-300",
-              )}
-            >
-              <item.icon className="size-4" aria-hidden="true" />
-            </span>
-            <span className={cn("min-w-0", compact && "hidden sm:block")}>
-              <span className="block truncate text-sm font-semibold">{item.label}</span>
-              {!compact ? (
-                <span className="mt-0.5 block text-[11px] text-slate-500">{item.caption}</span>
-              ) : null}
-            </span>
-            {active && !compact ? (
-              <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-accent" />
-            ) : null}
+            <item.icon className="size-3.5" aria-hidden="true" />
+            {item.label}
+            {active ? <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" /> : null}
           </button>
         )
       })}
@@ -88,88 +54,68 @@ function Navigation({
   )
 }
 
-export function AppShell({
-  activeView,
-  onViewChange,
-  apiState,
-  apiDocsUrl,
-  children,
-}: AppShellProps) {
+export function AppShell({ activeView, onViewChange, apiState, apiDocsUrl, children }: AppShellProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-border bg-[#070d1a]/95 px-4 py-5 backdrop-blur lg:flex">
-        <div className="flex items-center gap-3 px-2">
-          <div className="grid size-10 place-items-center rounded-xl border border-accent/35 bg-accent/8 font-mono text-xs font-semibold text-accent">
-            FKL
-          </div>
-          <div>
-            <p className="text-sm font-semibold tracking-tight">Fact Knowledge Layer</p>
-            <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-slate-500">
-              Audit console
-            </p>
-          </div>
-        </div>
+      <header className="sticky top-0 z-20 border-b border-border bg-card">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] sm:flex sm:min-h-14 sm:items-stretch">
+          <button
+            type="button"
+            className="flex min-w-0 items-center gap-2.5 border-r border-border px-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-w-64 sm:shrink-0 sm:px-5"
+            onClick={() => onViewChange("documents")}
+          >
+            <span className="grid size-7 place-items-center border border-primary bg-primary text-primary-foreground">
+              <Layers3 className="size-4" strokeWidth={1.8} aria-hidden="true" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold tracking-[-0.02em]">Fact Knowledge Layer</span>
+              <span className="hidden font-mono text-[9px] uppercase tracking-[0.08em] text-muted-foreground sm:block">Traceability verifier</span>
+            </span>
+          </button>
 
-        <div className="my-5 h-px bg-border" />
-        <Navigation activeView={activeView} onViewChange={onViewChange} />
-
-        <div className="mt-auto space-y-3">
-          <div className="rounded-xl border border-border bg-background/45 p-3.5">
-            <div className="flex items-center gap-2">
-              <Layers3 className="size-4 text-accent" aria-hidden="true" />
-              <p className="text-xs font-semibold text-foreground">Trust boundary</p>
-            </div>
-            <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
-              The LLM extracts candidates. Source checks and relationship decisions remain
-              deterministic.
-            </p>
+          <div className="order-3 col-span-2 min-w-0 border-t border-border lg:hidden">
+            <Navigation activeView={activeView} onViewChange={onViewChange} />
           </div>
-          <Button asChild variant="ghost" className="w-full justify-start">
-            <a href={apiDocsUrl} target="_blank" rel="noreferrer">
-              <Settings2 className="size-4" aria-hidden="true" />
-              API documentation
-              <ExternalLink className="ml-auto size-3.5" aria-hidden="true" />
-            </a>
-          </Button>
-        </div>
-      </aside>
 
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-10 border-b border-border bg-background/82 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
-                Evidence intelligence
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Trace facts. Audit decisions.
-              </p>
-            </div>
-            <div
-              className="flex min-h-9 items-center gap-2 rounded-full border border-border bg-card/65 px-3 font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground"
-              role="status"
-              aria-live="polite"
-            >
+          <div className="hidden flex-1 items-center border-r border-border px-5 font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground lg:flex">
+            Continuous evidence workspace
+          </div>
+
+          <div className="ml-auto flex shrink-0 items-center gap-1 border-l border-border px-2 sm:gap-2 sm:px-4">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.04em] text-muted-foreground" role="status" aria-live="polite" title={apiState === "ready" ? "API healthy" : apiState === "checking" ? "Checking API" : "API offline"}>
               <span
                 className={cn(
-                  "size-1.5 rounded-full",
-                  apiState === "ready" && "bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.08)]",
-                  apiState === "checking" && "animate-pulse bg-amber-300",
-                  apiState === "offline" && "bg-rose-400",
+                  "size-2 border",
+                  apiState === "ready" && "border-verify bg-verify",
+                  apiState === "checking" && "animate-pulse border-warning bg-warning",
+                  apiState === "offline" && "border-destructive bg-destructive",
                 )}
               />
-              {apiState === "ready" ? "API ready" : apiState === "checking" ? "Checking API" : "API offline"}
+              <Activity className="hidden size-3.5 sm:block" aria-hidden="true" />
+              <span className="hidden md:inline">{apiState === "ready" ? "API healthy" : apiState === "checking" ? "Checking API" : "API offline"}</span>
+              <span className="sr-only md:hidden">{apiState === "ready" ? "API healthy" : apiState === "checking" ? "Checking API" : "API offline"}</span>
             </div>
+            <Button asChild variant="ghost" size="icon" aria-label="Open API documentation">
+              <a href={apiDocsUrl} target="_blank" rel="noreferrer" title="API documentation">
+                <ExternalLink className="size-4" aria-hidden="true" />
+              </a>
+            </Button>
+            <Button size="sm" onClick={() => onViewChange("documents")}>
+              <FilePlus2 className="size-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Upload PDF</span>
+            </Button>
           </div>
-          <div className="border-t border-border px-3 py-2 lg:hidden">
-            <Navigation activeView={activeView} onViewChange={onViewChange} compact />
-          </div>
-        </header>
+        </div>
+      </header>
 
-        <main className="mx-auto max-w-[1500px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
-          {children}
-        </main>
-      </div>
+      <main className="mx-auto w-full max-w-[1800px] px-3 py-4 sm:px-5 sm:py-5 lg:px-6">{children}</main>
+
+      <footer className="border-t border-border bg-card px-5 py-2 font-mono text-[9px] uppercase tracking-[0.06em] text-muted-foreground">
+        <div className="mx-auto flex max-w-[1800px] flex-wrap items-center justify-between gap-2">
+          <span>Fact Knowledge Layer · Evidence before assertion</span>
+          <span>Private workspace · Deterministic reasoning</span>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -149,17 +149,16 @@ export function DocumentsView({
   }
 
   return (
-    <div className="space-y-6">
-      <header className="max-w-3xl">
-        <p className="eyebrow">01 / Document intake</p>
-        <h1 className="page-title">Build an evidence trail from any PDF.</h1>
+    <div className="space-y-4">
+      <header className="max-w-3xl border-b border-border pb-4">
+        <h1 className="page-title">Document register</h1>
         <p className="page-description">
           Upload a report, extract structured claims, and retain the exact source text needed to
           audit every result.
         </p>
       </header>
 
-      <section className="grid gap-3 md:grid-cols-3" aria-label="System guarantees">
+      <section className="grid overflow-hidden border border-border bg-card md:grid-cols-3" aria-label="System guarantees">
         {[
           {
             icon: Fingerprint,
@@ -183,17 +182,17 @@ export function DocumentsView({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.24, delay: index * 0.04 }}
           >
-            <Card className="h-full bg-card/75">
-              <CardContent className="flex items-start gap-3 p-4">
-                <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-accent/20 bg-accent/7 text-accent">
+            <div className="h-full border-b border-border p-3 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
+              <div className="flex items-start gap-3">
+                <div className="grid size-8 shrink-0 place-items-center border border-primary bg-primary text-primary-foreground">
                   <item.icon className="size-4" aria-hidden="true" />
                 </div>
                 <div>
                   <h2 className="text-sm font-semibold">{item.title}</h2>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.text}</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         ))}
       </section>
@@ -203,7 +202,6 @@ export function DocumentsView({
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="eyebrow">Source document</p>
                 <CardTitle>Upload one PDF</CardTitle>
                 <CardDescription>Schema-independent extraction · maximum 100 MB</CardDescription>
               </div>
@@ -213,7 +211,7 @@ export function DocumentsView({
           <CardContent>
             <div
               className={cn(
-                "group grid min-h-48 place-items-center rounded-xl border border-dashed border-border bg-background/40 p-6 text-center transition-colors",
+                "group grid min-h-48 place-items-center rounded-[3px] border border-dashed border-border bg-surface-low p-6 text-center transition-colors",
                 dragActive && "border-accent bg-accent/7",
               )}
               onDragEnter={(event) => {
@@ -225,7 +223,7 @@ export function DocumentsView({
               onDrop={handleDrop}
             >
               <div>
-                <div className="mx-auto grid size-11 place-items-center rounded-xl border border-border bg-secondary text-muted-foreground transition-colors group-hover:border-accent/40 group-hover:text-accent">
+                <div className="mx-auto grid size-11 place-items-center border border-primary bg-card text-primary transition-colors group-hover:bg-secondary">
                   <FileText className="size-5" aria-hidden="true" />
                 </div>
                 {file ? (
@@ -278,8 +276,8 @@ export function DocumentsView({
                   className={cn(
                     "mt-3 rounded-lg border px-3 py-2 text-sm",
                     notice.tone === "success"
-                      ? "border-emerald-400/25 bg-emerald-400/7 text-emerald-200"
-                      : "border-rose-400/25 bg-rose-400/7 text-rose-200",
+                      ? "border-emerald-700/30 bg-emerald-50 text-emerald-800"
+                      : "border-red-700/30 bg-red-50 text-red-800",
                   )}
                 >
                   {notice.text}
@@ -289,9 +287,8 @@ export function DocumentsView({
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(34,197,94,0.09),transparent_60%)]">
+        <Card className="overflow-hidden bg-surface-low">
           <CardHeader>
-            <p className="eyebrow">Evidence contract</p>
             <CardTitle>No claim without a trail.</CardTitle>
             <CardDescription>
               Model output is treated as a candidate until the quote is recovered from source.
@@ -303,7 +300,7 @@ export function DocumentsView({
               ["Recover", "Actual source substring with page-local offsets"],
               ["Separate", "Extraction, evidence, and classification confidence"],
             ].map(([title, detail]) => (
-              <div key={title} className="border-l-2 border-accent/50 pl-4">
+              <div key={title} className="border-l border-accent pl-4">
                 <p className="text-sm font-semibold text-foreground">{title}</p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
               </div>
@@ -312,7 +309,7 @@ export function DocumentsView({
         </Card>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border bg-background/35">
+      <section className="overflow-hidden rounded-[4px] border border-border bg-card">
         <div className="grid sm:grid-cols-2 xl:grid-cols-4">
           {PIPELINE_STEPS.map((step, index) => {
             const complete = currentStep > index
@@ -324,7 +321,7 @@ export function DocumentsView({
               >
                 <div
                   className={cn(
-                    "grid size-7 shrink-0 place-items-center rounded-full border font-mono text-[10px]",
+                    "grid size-7 shrink-0 place-items-center border font-mono text-[10px]",
                     complete && "border-accent bg-accent text-accent-foreground",
                     active && "border-accent bg-accent/10 text-accent",
                     !complete && !active && "border-border text-slate-500",
@@ -352,7 +349,6 @@ export function DocumentsView({
       <section>
         <div className="mb-3 flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">Active workspace</p>
             <h2 className="text-lg font-semibold tracking-tight">Tracked documents</h2>
           </div>
           <span className="font-mono text-[11px] text-slate-500">{documents.length} TOTAL</span>
@@ -360,10 +356,10 @@ export function DocumentsView({
         {documents.length ? (
           <div className="grid gap-3">
             {documents.map((document) => (
-              <Card key={document.id} className="bg-card/70">
+              <Card key={document.id}>
                 <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
                   <div className="flex min-w-0 items-center gap-3">
-                    <div className="grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-background/50 text-muted-foreground">
+                    <div className="grid size-10 shrink-0 place-items-center border border-border bg-surface-low text-muted-foreground">
                       <ScanSearch className="size-4" aria-hidden="true" />
                     </div>
                     <div className="min-w-0">
@@ -402,7 +398,7 @@ export function DocumentsView({
             ))}
           </div>
         ) : (
-          <div className="grid min-h-40 place-items-center rounded-xl border border-dashed border-border bg-background/25 p-6 text-center">
+          <div className="grid min-h-40 place-items-center rounded-[4px] border border-dashed border-border bg-card p-6 text-center">
             <div>
               <FileText className="mx-auto size-5 text-slate-500" aria-hidden="true" />
               <p className="mt-3 text-sm font-medium text-foreground">No documents tracked yet</p>

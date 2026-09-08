@@ -7,9 +7,11 @@ import type { Fact } from "@/lib/types"
 
 function Field({ label, value }: { label: string; value: string | null }) {
   return (
-    <div>
-      <dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-slate-500">{label}</dt>
-      <dd className="mt-1 text-sm font-medium text-foreground">{value || "Not specified"}</dd>
+    <div className="min-w-0 border-r border-border px-3 py-2.5 last:border-r-0">
+      <dt className="data-label">{label}</dt>
+      <dd className="mt-1 truncate text-xs font-semibold text-foreground" title={value || undefined}>
+        {value || "Not specified"}
+      </dd>
     </div>
   )
 }
@@ -19,31 +21,29 @@ export function FactInspector({ fact, label }: { fact: Fact; label?: string }) {
   const offsets =
     evidence.start_offset === null || evidence.end_offset === null
       ? "Not verified"
-      : `${evidence.start_offset}:${evidence.end_offset}`
+      : `${evidence.start_offset}–${evidence.end_offset}`
 
   return (
-    <article className="rounded-xl border border-border bg-card/90 p-5 shadow-[0_18px_45px_rgba(0,0,0,0.14)]">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
-        <div>
-          {label ? (
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
-              {label}
-            </p>
-          ) : null}
-          <h3 className="text-lg font-semibold tracking-tight text-foreground">{fact.subject}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{fact.predicate}</p>
+    <article className="ledger-panel overflow-hidden" aria-label={label || "Selected fact exhibit"}>
+      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-primary bg-primary px-4 py-3 text-primary-foreground">
+        <div className="min-w-0">
+          <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-blue-100">
+            {label || "Selected exhibit"} · {fact.id.slice(0, 8)}
+          </p>
+          <h2 className="mt-1 truncate text-base font-semibold tracking-[-0.02em]">{fact.subject}</h2>
+          <p className="mt-0.5 truncate text-xs text-blue-100">{fact.predicate}</p>
         </div>
         <StatusBadge status={evidence.status} />
-      </div>
+      </header>
 
-      <dl className="grid gap-4 border-b border-border py-4 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 border-b border-border bg-surface-low sm:grid-cols-4">
         <Field label="Value" value={fact.value} />
         <Field label="Unit" value={fact.unit} />
         <Field label="Currency" value={fact.currency} />
         <Field label="Temporal scope" value={fact.temporal_scope} />
       </dl>
 
-      <div className="grid gap-3 py-4 sm:grid-cols-2">
+      <div className="grid border-b border-border sm:grid-cols-2">
         <ConfidenceMeter label="Extraction confidence" score={fact.confidence.extraction} />
         <ConfidenceMeter
           label="Evidence confidence"
@@ -52,27 +52,47 @@ export function FactInspector({ fact, label }: { fact: Fact; label?: string }) {
         />
       </div>
 
-      <section className="rounded-lg border border-border bg-background/45 p-4" aria-labelledby={`evidence-${fact.id}`}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="p-4" aria-labelledby={`evidence-${fact.id}`}>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
           <div className="flex items-center gap-2">
-            <BookOpenText className="size-4 text-accent" aria-hidden="true" />
-            <h4 id={`evidence-${fact.id}`} className="text-sm font-semibold">
-              Source evidence
-            </h4>
+            <span className="grid size-7 place-items-center border border-primary bg-primary text-primary-foreground">
+              <BookOpenText className="size-3.5" aria-hidden="true" />
+            </span>
+            <div>
+              <h3 id={`evidence-${fact.id}`} className="text-xs font-bold uppercase tracking-[0.04em]">
+                Source evidence
+              </h3>
+              <p className="mt-0.5 font-mono text-[9px] text-muted-foreground">Recovered source substring</p>
+            </div>
           </div>
           <Badge variant="neutral">
             <MapPin className="size-3" aria-hidden="true" />
-            PDF page {evidence.physical_page_number}
+            Physical page {evidence.physical_page_number}
           </Badge>
         </div>
-        <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-slate-500">
-          Printed label {evidence.printed_page_label || "not available"} · offsets {offsets}
-        </p>
-        <blockquote className="mt-4 border-l-2 border-accent/55 pl-4 text-sm leading-7 text-slate-200">
+
+        <div className="grid grid-cols-2 border-x border-b border-border bg-surface-low sm:grid-cols-3">
+          <div className="border-r border-border px-3 py-2">
+            <span className="data-label">Printed label</span>
+            <span className="mt-1 block font-mono text-[11px] tabular">{evidence.printed_page_label || "Not available"}</span>
+          </div>
+          <div className="border-r border-border px-3 py-2">
+            <span className="data-label">Offsets</span>
+            <span className="mt-1 block font-mono text-[11px] tabular">{offsets}</span>
+          </div>
+          <div className="col-span-2 px-3 py-2 sm:col-span-1">
+            <span className="data-label">Similarity</span>
+            <span className="mt-1 block font-mono text-[11px] tabular">{fact.verification.similarity_score.toFixed(1)}%</span>
+          </div>
+        </div>
+
+        <blockquote className="relative mt-4 border border-border bg-[#fffef8] px-5 py-5 text-sm leading-7 text-foreground">
+          <span className="absolute left-0 top-0 h-full w-px bg-verify" aria-hidden="true" />
           “{evidence.quote}”
         </blockquote>
+
         {evidence.failure_reason ? (
-          <div className="mt-4 flex gap-2 rounded-lg border border-rose-400/25 bg-rose-400/7 p-3 text-sm text-rose-200">
+          <div className="mt-4 flex gap-2 border border-red-700/30 bg-red-50 p-3 text-sm text-red-800" role="alert">
             <CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <span>{evidence.failure_reason}</span>
           </div>

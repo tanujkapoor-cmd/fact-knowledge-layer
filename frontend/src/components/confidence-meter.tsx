@@ -13,15 +13,16 @@ export function ConfidenceMeter({
   tone?: "info" | "success" | "warning"
 }) {
   return (
-    <div className="rounded-lg border border-border bg-background/35 p-3.5">
-      <div className="mb-2.5 flex items-center justify-between gap-3">
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+    <div className="border-r border-border bg-card px-3 py-2.5 last:border-r-0">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span className="data-label">{label}</span>
         <Badge variant={tone}>{confidenceLabel(score.value)}</Badge>
       </div>
       <Progress value={score.value * 100} />
-      <p className="mt-2 truncate font-mono text-[10px] text-slate-500" title={score.method}>
-        {score.method}
-      </p>
+      <div className="mt-1.5 flex items-center justify-between gap-2 font-mono text-[9px] text-muted-foreground">
+        <span className="truncate" title={score.method}>{score.method}</span>
+        <span className="tabular">{Math.round(score.value * 100)}%</span>
+      </div>
     </div>
   )
 }

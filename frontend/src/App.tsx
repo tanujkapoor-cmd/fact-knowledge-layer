@@ -5,6 +5,7 @@ import { AppShell, type ViewId } from "@/components/app-shell"
 import { DocumentsView } from "@/features/documents/documents-view"
 import { FactsView } from "@/features/facts/facts-view"
 import { RelationshipsView } from "@/features/relationships/relationships-view"
+import { EvidenceWorkspace } from "@/features/workspace/evidence-workspace"
 import { api, API_DOCS_URL } from "@/lib/api"
 import type { TrackedDocument } from "@/lib/types"
 
@@ -67,37 +68,47 @@ export default function App() {
         apiState={apiState}
         apiDocsUrl={API_DOCS_URL}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={activeView}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            {activeView === "documents" ? (
-              <DocumentsView
-                documents={documents}
-                onDocumentUpdate={updateDocument}
-                onOpenFacts={openFacts}
-              />
-            ) : null}
-            {activeView === "facts" ? (
-              <FactsView
-                documents={documents}
-                selectedDocumentId={selectedDocumentId}
-                onSelectedDocumentChange={setSelectedDocumentId}
-              />
-            ) : null}
-            {activeView === "relationships" ? (
-              <RelationshipsView
-                documents={documents}
-                selectedDocumentId={selectedDocumentId}
-                onSelectedDocumentChange={setSelectedDocumentId}
-              />
-            ) : null}
-          </motion.div>
-        </AnimatePresence>
+        <div className="hidden lg:block">
+          <EvidenceWorkspace
+            documents={documents}
+            selectedDocumentId={selectedDocumentId}
+            onSelectedDocumentChange={setSelectedDocumentId}
+            onDocumentUpdate={updateDocument}
+          />
+        </div>
+        <div className="lg:hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeView}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {activeView === "documents" ? (
+                <DocumentsView
+                  documents={documents}
+                  onDocumentUpdate={updateDocument}
+                  onOpenFacts={openFacts}
+                />
+              ) : null}
+              {activeView === "facts" ? (
+                <FactsView
+                  documents={documents}
+                  selectedDocumentId={selectedDocumentId}
+                  onSelectedDocumentChange={setSelectedDocumentId}
+                />
+              ) : null}
+              {activeView === "relationships" ? (
+                <RelationshipsView
+                  documents={documents}
+                  selectedDocumentId={selectedDocumentId}
+                  onSelectedDocumentChange={setSelectedDocumentId}
+                />
+              ) : null}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </AppShell>
     </MotionConfig>
   )
