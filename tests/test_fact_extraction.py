@@ -210,7 +210,7 @@ def test_gemini_adapter_uses_pydantic_structured_output() -> None:
     assert result.request_id == "req-gemini-1"
     assert models.kwargs["model"] == "gemini-3.8-flash"
     assert models.kwargs["config"].response_mime_type == "application/json"
-    assert models.kwargs["config"].response_schema is FactCandidateBatch
+    assert models.kwargs["config"].response_json_schema == FactCandidateBatch.model_json_schema()
     assert models.kwargs["config"].system_instruction == SYSTEM_PROMPT
     assert "physical_page_number" in models.kwargs["contents"]
 

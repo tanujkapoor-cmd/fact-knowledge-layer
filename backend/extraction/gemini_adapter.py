@@ -68,7 +68,7 @@ class GeminiStructuredFactAdapter:
                 config=types.GenerateContentConfig(
                     system_instruction=SYSTEM_PROMPT,
                     response_mime_type="application/json",
-                    response_schema=FactCandidateBatch,
+                    response_json_schema=FactCandidateBatch.model_json_schema(),
                 ),
             )
         except errors.APIError as exc:
