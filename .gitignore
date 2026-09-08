@@ -32,3 +32,16 @@ frontend/.vite/
 frontend/*.local
 .playwright-cli/
 output/playwright/
+
+# Local coding and design-tool state
+.agent/
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.impeccable/*
+!.impeccable/design.json
+frontend/.impeccable/
+output/
+tmp/
