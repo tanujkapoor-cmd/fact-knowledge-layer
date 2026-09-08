@@ -24,9 +24,18 @@ class FactCandidate(ExtractionModel):
     the strict JSON schema while still allowing an explicit null value.
     """
 
-    subject: NonEmptyText
-    predicate: NonEmptyText
-    value: NonEmptyText
+    subject: NonEmptyText = Field(
+        description="Entity or population the claim is about; excludes the measured metric."
+    )
+    predicate: NonEmptyText = Field(
+        description=(
+            "Comparable property, metric, relationship, or event as a concise noun phrase; "
+            "never only is/was/had/amounted to."
+        )
+    )
+    value: NonEmptyText = Field(
+        description="Asserted value or outcome only; excludes the subject and predicate."
+    )
     unit: OptionalCleanText
     currency: OptionalCleanText
     temporal_scope: OptionalCleanText

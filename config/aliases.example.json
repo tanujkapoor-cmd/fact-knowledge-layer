@@ -1,4 +1,17 @@
 {
   "entity_aliases": {},
-  "predicate_aliases": {}
+  "predicate_aliases": {
+    "revenue from contracts with customers": "customer revenue",
+    "revenue from services": "customer revenue",
+    "total revenue from customers": "customer revenue",
+    "number of employees": "employee count",
+    "team size": "employee count",
+    "workforce strength": "employee count",
+    "pin-code reach": "serviceable pin codes",
+    "pin codes covered": "serviceable pin codes",
+    "postal index number codes served": "serviceable pin codes",
+    "net working capital days": "working capital days",
+    "cash and cash equivalents at the end of the year": "closing cash balance",
+    "total cash balance": "closing cash balance"
+  }
 }

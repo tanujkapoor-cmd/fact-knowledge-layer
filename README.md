@@ -86,6 +86,9 @@ The extraction adapter supports Gemini and OpenAI structured output behind the s
 
 `backend/reasoning/normalize.py` and `backend/reasoning/classify.py` contain no LLM calls. They canonicalize explicitly configured aliases, parse reporting periods, convert known units using `Decimal`, and compare facts in a fixed order. Relationship candidates are blocked by canonical entity and predicate instead of comparing every fact to every other fact.
 
+`config/aliases.example.json` contains a small reusable starter vocabulary for common financial
+and operating metrics. Teams can replace or extend it without modifying reasoning code.
+
 The classifier checks entity, predicate, normalized value, written precision/rounding, time, data vintage, unit, currency, and scope. It returns `corroborates`, `contradicts`, `reconciled`, or `uncertain`, together with every ordered check. An LLM is permitted only to resolve a bounded set of near-name entity ties; it never chooses the relationship label.
 
 ### Honest confidence and recovery
@@ -110,6 +113,11 @@ LLM calls use bounded exponential backoff. Each successful page batch persists f
 The repository intentionally does not invent ground truth. After a reviewer hand-labels an exhaustive page scope and selected relationship pairs, run:
 
 ```bash
+python -m evaluation.export_predictions \
+  --api-base http://127.0.0.1:8000 \
+  --document DOCUMENT_ID --format evaluation \
+  --output evaluation/predictions.json
+
 python -m evaluation.run_eval \
   --ground-truth evaluation/ground_truth.json \
   --predictions evaluation/predictions.json \
@@ -117,6 +125,20 @@ python -m evaluation.run_eval \
 ```
 
 The harness reports extraction precision/recall, exact-evidence-quote rate, and a four-class relationship confusion matrix with an explicit `missing` prediction column. See `docs/evaluation.md` for the label contract.
+
+### Starter-dataset smoke run
+
+On 9 September 2026, all three Delhivery starter PDFs completed with a real Gemini key using
+`gemini-3.5-flash-lite` and extraction prompt v3. The run retained 1,240 candidates: 1,019 with
+verified source evidence and 221 rejected evidence matches. Deterministic blocking produced eight
+relationships: one corroboration, four contradictions, one contextual reconciliation, and two
+uncertain decisions.
+
+These counts prove the complete pipeline and all four UI states execute; they are **not accuracy
+scores**. In particular, some contradiction candidates expose extraction errors even though their
+quotes are real. Human labels are still required before making quality claims. The full auditable
+API export is in `sample_data/delhivery_sample_output.json`; the neutral scoring export is in
+`evaluation/predictions.sample.json`.
 
 ## Deployment
 
