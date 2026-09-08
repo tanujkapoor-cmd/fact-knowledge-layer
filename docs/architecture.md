@@ -7,7 +7,7 @@ weaken the invariants.
 ## Components and dependency direction
 
 ```text
-Streamlit UI -> FastAPI API -> pipeline orchestration
+React UI -> FastAPI API -> pipeline orchestration
                                   |-> ingestion adapter (PyMuPDF)
                                   |-> extraction adapter (LLM)
                                   |-> evidence verifier
@@ -16,7 +16,7 @@ Streamlit UI -> FastAPI API -> pipeline orchestration
 ```
 
 The domain models and deterministic reasoning code are at the center. They do not import
-FastAPI, Streamlit, SQLAlchemy, PyMuPDF, or an LLM SDK. Infrastructure adapters convert
+FastAPI, React, SQLAlchemy, PyMuPDF, or an LLM SDK. Infrastructure adapters convert
 external data into validated domain objects before invoking deterministic logic.
 
 ## Processing lifecycle
@@ -125,9 +125,10 @@ message on the document instead of silently disappearing.
 
 ## Phase boundaries
 
-The project is implemented in the ten user-approved phases. Each phase must pass its relevant
-tests, be committed separately, and stop for review. Deployment is an optional eleventh phase
-after the required system is complete. No README is created by this implementation.
+The project was implemented in the ten user-approved phases. After those phases passed, the user
+approved replacing the original Streamlit presentation layer with a React client. The API and all
+reasoning invariants remain unchanged. Deployment is an optional phase after local verification.
+No README is created by this implementation.
 
 ## Verification boundary
 

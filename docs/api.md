@@ -1,6 +1,6 @@
 # API Contract
 
-The API is the stable boundary shared by the Streamlit demo and any future client. FastAPI also
+The API is the stable boundary used by the React audit console and any future client. FastAPI also
 publishes this contract interactively at `/docs`.
 
 ## Upload and processing

@@ -17,7 +17,6 @@ dependencies = [
     "python-multipart>=0.0.20,<1.0",
     "rapidfuzz>=3.13,<4.0",
     "sqlalchemy>=2.0.43,<3.0",
-    "streamlit>=1.49,<2.0",
     "uvicorn[standard]>=0.35,<1.0",
 ]
 
@@ -32,7 +31,7 @@ dev = [
 include = ["backend*"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers --cov=backend --cov=frontend.api_client --cov=evaluation --cov-branch --cov-report=term-missing --cov-fail-under=85"
+addopts = "-ra --strict-markers --cov=backend --cov=evaluation --cov-branch --cov-report=term-missing --cov-fail-under=85"
 testpaths = ["tests"]
 
 [tool.ruff]

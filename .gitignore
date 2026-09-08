@@ -25,3 +25,10 @@ Thumbs.db
 
 uploads/
 evaluation/results/
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.local
+.playwright-cli/
+output/playwright/
