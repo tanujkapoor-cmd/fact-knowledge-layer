@@ -9,6 +9,8 @@ _ADDITIVE_COLUMNS = {
         "provider_attempt_count": "INTEGER NOT NULL DEFAULT 0",
         "retry_count": "INTEGER NOT NULL DEFAULT 0",
         "last_checkpoint_at": "DATETIME",
+        "checkpoint_model": "VARCHAR(128)",
+        "checkpoint_prompt_version": "VARCHAR(64)",
     },
     "facts": {
         "scope": "TEXT",

@@ -27,7 +27,7 @@ queued -> ingesting -> extracting -> verifying -> normalizing -> classifying -> 
 ```
 
 1. Validate an uploaded PDF and calculate its SHA-256 hash.
-2. Reuse an existing completed document when the hash already exists.
+2. Reuse a completed document when the hash exists, or explicitly retry a failed duplicate.
 3. Extract text page by page while preserving one-based physical page numbers and offsets.
 4. Ask the LLM adapter for schema-constrained candidate facts.
 5. Verify every quote against its source page and recover the actual source substring.
@@ -35,6 +35,9 @@ queued -> ingesting -> extracting -> verifying -> normalizing -> classifying -> 
 7. Normalize verified facts with pure deterministic functions.
 8. Block relationship candidates by canonical entity and predicate.
 9. Classify candidates with ordered deterministic checks and persist the full reasoning trace.
+
+Each verified extraction batch is committed with the model and prompt version that created it. A
+retry resumes only when those versions still match; otherwise derived work restarts cleanly.
 
 ## Extraction boundary
 
@@ -85,7 +88,8 @@ a filename or hidden global state.
 
 - Normalization and classification are deterministic and have no LLM dependency.
 - Classification checks entity, predicate, normalized equality, and then explanatory context
-  such as time, unit, currency, or scope before deciding contradiction.
+  such as written precision/rounding, time, data vintage, unit, currency, or scope before deciding
+  contradiction.
 - An LLM may only break an explicitly ambiguous entity tie or verbalize a completed decision.
 - The LLM never selects or changes a relationship classification.
 - Every relationship includes an ordered, machine-readable reasoning trace.
@@ -93,10 +97,10 @@ a filename or hidden global state.
 
 The classifier emits candidates only inside an exact canonical entity-and-predicate block and,
 by default, only across different documents. Its trace always contains the complete ordered
-decision tree. Exact same representations corroborate; equivalent values converted from different
-units or currencies reconcile; different periods or scopes reconcile unequal values. Missing or
-incompatible comparison context is uncertain. A contradiction is emitted only after every
-deterministic context check has failed to explain unequal values.
+decision tree. Exact same representations corroborate; compatible precision intervals reconcile
+as rounding; converted units or currencies reconcile; and different periods, data vintages, or
+scopes reconcile unequal values. Missing or incompatible comparison context is uncertain. A
+contradiction is emitted only after every context check fails to explain unequal values.
 
 ## Confidence contracts
 
@@ -128,8 +132,8 @@ message on the document instead of silently disappearing.
 
 The project was implemented in the ten user-approved phases. After those phases passed, the user
 approved replacing the original Streamlit presentation layer with a React client. The API and all
-reasoning invariants remain unchanged. Deployment is an optional phase after local verification.
-No README is created by this implementation.
+reasoning invariants remain unchanged. Post-phase hardening adds checkpoint recovery and a
+container deployment path without changing these boundaries.
 
 ## Verification boundary
 

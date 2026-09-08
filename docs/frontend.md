@@ -23,3 +23,6 @@ Uploads provide immediate validation and submission feedback. Active documents p
 without moving keyboard focus. Fact review keeps a candidate index beside its evidence inspector.
 Relationship review separates the deterministic reasoning trace from the two complete source
 facts. Both result sets can be exported as JSON for external review.
+
+A failed run displays the provider's sanitized reason and last durable checkpoint. Reviewers can
+retry those exact bytes from the document card, and the UI never presents a failed job as complete.

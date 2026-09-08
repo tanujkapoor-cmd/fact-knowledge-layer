@@ -27,7 +27,12 @@ class FactExtractionService:
         *,
         batch_character_limit: int = 50_000,
         batch_page_limit: int = 8,
-        on_checkpoint: Callable[[ExtractionCheckpoint], None] | None = None,
+        start_page: int = 0,
+        initial_completed_batches: int = 0,
+        initial_provider_attempts: int = 0,
+        on_checkpoint: (
+            Callable[[ExtractionCheckpoint, Sequence[ExtractedFactRecord]], None] | None
+        ) = None,
     ) -> None:
         if batch_character_limit < 1 or batch_page_limit < 1:
             raise ValueError("batch limits must be positive")
@@ -35,6 +40,9 @@ class FactExtractionService:
         self._verifier = verifier or EvidenceVerifier()
         self._batch_character_limit = batch_character_limit
         self._batch_page_limit = batch_page_limit
+        self._start_page = start_page
+        self._initial_completed_batches = initial_completed_batches
+        self._initial_provider_attempts = initial_provider_attempts
         self._on_checkpoint = on_checkpoint
 
     def extract_document(self, document: ParsedPdf) -> ExtractionRun:
@@ -42,15 +50,16 @@ class FactExtractionService:
 
         facts: list[ExtractedFactRecord] = []
         request_ids: list[str] = []
-        provider_attempts = 0
-        completed_pages = 0
-        completed_batches = 0
+        provider_attempts = self._initial_provider_attempts
+        completed_pages = self._start_page
+        completed_batches = self._initial_completed_batches
 
-        for pages in self._page_batches(document.pages):
+        for pages in self._page_batches(document.pages[self._start_page :]):
             adapter_result = self._adapter.extract_facts(pages)
             if adapter_result.request_id:
                 request_ids.append(adapter_result.request_id)
-            facts.extend(self._verify_candidates(adapter_result.candidates, pages))
+            batch_records = self._verify_candidates(adapter_result.candidates, pages)
+            facts.extend(batch_records)
             provider_attempts += adapter_result.attempt_count
             completed_pages += len(pages)
             completed_batches += 1
@@ -62,7 +71,8 @@ class FactExtractionService:
                         completed_batches=completed_batches,
                         facts_seen=len(facts),
                         provider_attempts=provider_attempts,
-                    )
+                    ),
+                    batch_records,
                 )
 
         return ExtractionRun(

@@ -32,8 +32,8 @@ class GeminiStructuredFactAdapter:
         *,
         api_key: str | None = None,
         client: Any | None = None,
-        max_attempts: int = 3,
-        retry_base_seconds: float = 0.5,
+        max_attempts: int = 4,
+        retry_base_seconds: float = 2.0,
         sleep: Any | None = None,
     ) -> None:
         if not model.strip():
@@ -95,7 +95,10 @@ class GeminiStructuredFactAdapter:
                 retry_kwargs["sleep"] = self._sleep
             response, attempt_count = retry_provider_call(operation, **retry_kwargs)
         except errors.APIError as exc:
-            raise LlmExtractionError("Gemini fact extraction failed") from exc
+            detail = " ".join(str(exc).split())[:500]
+            raise LlmExtractionError(
+                f"Gemini fact extraction failed after {self._max_attempts} attempts: {detail}"
+            ) from exc
 
         parsed = getattr(response, "parsed", None)
         try:
@@ -157,7 +160,10 @@ class GeminiStructuredFactAdapter:
                 **({"sleep": self._sleep} if self._sleep is not None else {}),
             )
         except errors.APIError as exc:
-            raise LlmExtractionError("Gemini entity tie-break failed") from exc
+            detail = " ".join(str(exc).split())[:500]
+            raise LlmExtractionError(
+                f"Gemini entity tie-break failed after {self._max_attempts} attempts: {detail}"
+            ) from exc
         parsed = getattr(response, "parsed", None)
         if isinstance(parsed, EntityMatchBatch):
             return parsed

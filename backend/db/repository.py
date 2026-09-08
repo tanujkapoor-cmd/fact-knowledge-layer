@@ -38,6 +38,8 @@ class KnowledgeRepository:
             extraction_batch_count=0,
             provider_attempt_count=0,
             retry_count=0,
+            checkpoint_model=None,
+            checkpoint_prompt_version=None,
         )
         self.session.add(row)
         self.session.flush()
@@ -63,6 +65,8 @@ class KnowledgeRepository:
         completed_pages: int,
         completed_batches: int,
         provider_attempts: int,
+        model: str,
+        prompt_version: str,
     ) -> None:
         document = self.get_document(document_id)
         if document is None:
@@ -71,9 +75,17 @@ class KnowledgeRepository:
         document.extraction_batch_count = completed_batches
         document.provider_attempt_count = provider_attempts
         document.last_checkpoint_at = datetime.now(UTC)
+        document.checkpoint_model = model
+        document.checkpoint_prompt_version = prompt_version
 
-    def prepare_document_retry(self, document_id: UUID | str) -> DocumentRow:
-        """Clear derived rows from a failed attempt while preserving document identity."""
+    def prepare_document_retry(
+        self,
+        document_id: UUID | str,
+        *,
+        model: str,
+        prompt_version: str,
+    ) -> DocumentRow:
+        """Resume a compatible checkpoint, otherwise restart derived work cleanly."""
 
         document = self.get_document(document_id)
         if document is None:
@@ -89,15 +101,27 @@ class KnowledgeRepository:
                 )
             )
         )
-        self.session.execute(delete(FactRow).where(FactRow.document_id == str(document_id)))
-        self.session.execute(delete(PageRow).where(PageRow.document_id == str(document_id)))
+        resume_compatible = (
+            document.processed_page_count > 0
+            and document.checkpoint_model == model
+            and document.checkpoint_prompt_version == prompt_version
+            and self.session.scalar(
+                select(PageRow.id).where(PageRow.document_id == str(document_id)).limit(1)
+            )
+            is not None
+        )
+        if not resume_compatible:
+            self.session.execute(delete(FactRow).where(FactRow.document_id == str(document_id)))
+            self.session.execute(delete(PageRow).where(PageRow.document_id == str(document_id)))
+            document.page_count = None
+            document.processed_page_count = 0
+            document.extraction_batch_count = 0
+            document.provider_attempt_count = 0
+            document.last_checkpoint_at = None
+            document.checkpoint_model = None
+            document.checkpoint_prompt_version = None
         document.status = DocumentStatus.QUEUED.value
         document.failure_reason = None
-        document.page_count = None
-        document.processed_page_count = 0
-        document.extraction_batch_count = 0
-        document.provider_attempt_count = 0
-        document.last_checkpoint_at = None
         document.retry_count += 1
         self.session.flush()
         return document
@@ -107,6 +131,11 @@ class KnowledgeRepository:
         if document is None:
             raise LookupError(f"document {document_id} does not exist")
         document.page_count = parsed.page_count
+        already_saved = self.session.scalar(
+            select(PageRow.id).where(PageRow.document_id == str(document_id)).limit(1)
+        )
+        if already_saved is not None:
+            return
         self.session.add_all(
             [
                 PageRow(

@@ -1,6 +1,6 @@
 """Background document-processing pipeline orchestrating existing adapters."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from types import SimpleNamespace
 from uuid import UUID, uuid4
 
@@ -10,6 +10,7 @@ from backend.config import Settings
 from backend.db.repository import KnowledgeRepository
 from backend.extraction import (
     EvidenceVerifier,
+    ExtractedFactRecord,
     ExtractionCheckpoint,
     FactExtractionAdapter,
     FactExtractionService,
@@ -64,13 +65,45 @@ class DocumentProcessingService:
             retry_base_seconds=self._settings.llm_retry_base_seconds,
         )
 
-    def _checkpoint(self, document_id: UUID, checkpoint: ExtractionCheckpoint) -> None:
+    def _checkpoint(
+        self,
+        document_id: UUID,
+        checkpoint: ExtractionCheckpoint,
+        records: Sequence[ExtractedFactRecord],
+        adapter: FactExtractionAdapter,
+    ) -> None:
         with self._session_factory.begin() as session:
-            KnowledgeRepository(session).set_document_checkpoint(
+            repository = KnowledgeRepository(session)
+            for record in records:
+                fact_id = uuid4()
+                normalized = None
+                if record.classification_eligible:
+                    source = SimpleNamespace(
+                        id=fact_id,
+                        document_id=document_id,
+                        subject=record.candidate.subject,
+                        predicate=record.candidate.predicate,
+                        value=record.candidate.value,
+                        unit=record.candidate.unit,
+                        currency=record.candidate.currency,
+                        temporal_scope=record.candidate.temporal_scope,
+                        scope=record.candidate.scope,
+                        data_vintage=record.candidate.data_vintage,
+                    )
+                    normalized = normalize_fact(
+                        source,
+                        entity_aliases=self._alias_config.entity_aliases,
+                        predicate_aliases=self._alias_config.predicate_aliases,
+                        fiscal_year_start_month=self._settings.fiscal_year_start_month,
+                    )
+                repository.save_fact(document_id, record, normalized)
+            repository.set_document_checkpoint(
                 document_id,
                 completed_pages=checkpoint.completed_pages,
                 completed_batches=checkpoint.completed_batches,
                 provider_attempts=checkpoint.provider_attempts,
+                model=adapter.model,
+                prompt_version=adapter.prompt_version,
             )
         current = self._status_registry.get(str(document_id), {})
         self._status_registry[str(document_id)] = {
@@ -107,47 +140,40 @@ class DocumentProcessingService:
                 repository = KnowledgeRepository(session)
                 repository.save_pages(document_id, parsed)
                 repository.set_document_status(document_id, DocumentStatus.EXTRACTING)
+                document = repository.get_document(document_id)
+                if document is None:
+                    raise LookupError(f"document {document_id} does not exist")
+                resume_page = document.processed_page_count
+                resume_batches = document.extraction_batch_count
+                resume_attempts = document.provider_attempt_count
             self._status_registry[str(document_id)] = {
                 "status": DocumentStatus.EXTRACTING.value,
                 "failure_reason": None,
             }
 
             adapter = self._adapter_factory()
-            extraction = FactExtractionService(
+            FactExtractionService(
                 adapter,
                 EvidenceVerifier(fuzzy_threshold=self._settings.evidence_fuzzy_threshold),
                 batch_character_limit=self._settings.extraction_batch_char_limit,
                 batch_page_limit=self._settings.extraction_batch_page_limit,
-                on_checkpoint=lambda checkpoint: self._checkpoint(document_id, checkpoint),
+                start_page=resume_page,
+                initial_completed_batches=resume_batches,
+                initial_provider_attempts=resume_attempts,
+                on_checkpoint=lambda checkpoint, records: self._checkpoint(
+                    document_id,
+                    checkpoint,
+                    records,
+                    adapter,
+                ),
             ).extract_document(parsed)
             self._set_status(document_id, DocumentStatus.VERIFYING)
 
             with self._session_factory.begin() as session:
-                repository = KnowledgeRepository(session)
-                repository.set_document_status(document_id, DocumentStatus.NORMALIZING)
-                for record in extraction.facts:
-                    fact_id = uuid4()
-                    normalized = None
-                    if record.classification_eligible:
-                        source = SimpleNamespace(
-                            id=fact_id,
-                            document_id=document_id,
-                            subject=record.candidate.subject,
-                            predicate=record.candidate.predicate,
-                            value=record.candidate.value,
-                            unit=record.candidate.unit,
-                            currency=record.candidate.currency,
-                            temporal_scope=record.candidate.temporal_scope,
-                            scope=record.candidate.scope,
-                            data_vintage=record.candidate.data_vintage,
-                        )
-                        normalized = normalize_fact(
-                            source,
-                            entity_aliases=self._alias_config.entity_aliases,
-                            predicate_aliases=self._alias_config.predicate_aliases,
-                            fiscal_year_start_month=self._settings.fiscal_year_start_month,
-                        )
-                    repository.save_fact(document_id, record, normalized)
+                KnowledgeRepository(session).set_document_status(
+                    document_id,
+                    DocumentStatus.NORMALIZING,
+                )
 
             self._set_status(document_id, DocumentStatus.CLASSIFYING)
             with self._session_factory.begin() as session:

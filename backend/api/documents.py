@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from backend.api.dependencies import get_session
 from backend.api.presenters import present_document, present_fact
 from backend.db.repository import KnowledgeRepository
+from backend.extraction.prompt import PROMPT_VERSION
 from backend.ingestion.pipeline import DocumentProcessingService
 from backend.models.api import (
     DocumentStatusResponse,
@@ -50,7 +51,11 @@ async def upload_document(
     existing = repository.find_document_by_hash(digest)
     if existing:
         if retry_failed and existing.status == "failed":
-            document = repository.prepare_document_retry(existing.id)
+            document = repository.prepare_document_retry(
+                existing.id,
+                model=request.app.state.settings.llm_model,
+                prompt_version=PROMPT_VERSION,
+            )
             document.file_name = file_name
             session.commit()
             retry_started = True

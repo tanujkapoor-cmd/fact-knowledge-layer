@@ -34,6 +34,8 @@ class DocumentRow(Base):
     provider_attempt_count: Mapped[int] = mapped_column(Integer, default=0)
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     last_checkpoint_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    checkpoint_model: Mapped[str | None] = mapped_column(String(128))
+    checkpoint_prompt_version: Mapped[str | None] = mapped_column(String(64))
 
     pages: Mapped[list["PageRow"]] = relationship(cascade="all, delete-orphan")
     facts: Mapped[list["FactRow"]] = relationship(cascade="all, delete-orphan")

@@ -33,8 +33,8 @@ class Settings(BaseSettings):
     ambiguous_entity_lower_similarity: float = Field(default=0.82, ge=0.0, le=1.0)
     ambiguous_entity_upper_similarity: float = Field(default=0.97, ge=0.0, le=1.0)
     ambiguous_entity_max_pairs: int = Field(default=20, ge=0, le=100)
-    llm_max_attempts: int = Field(default=3, ge=1, le=6)
-    llm_retry_base_seconds: float = Field(default=0.5, ge=0.0, le=10.0)
+    llm_max_attempts: int = Field(default=4, ge=1, le=6)
+    llm_retry_base_seconds: float = Field(default=2.0, ge=0.0, le=10.0)
     max_upload_bytes: int = Field(default=100 * 1024 * 1024, ge=1)
 
 
