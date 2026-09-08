@@ -198,7 +198,7 @@ def test_gemini_adapter_uses_pydantic_structured_output() -> None:
     candidate = _candidate(1, "Delhivery reported revenue of INR 100 crore in FY2024.")
     models = _FakeGeminiModels(FactCandidateBatch(facts=[candidate]))
     adapter = GeminiStructuredFactAdapter(
-        model="gemini-2.5-flash",
+        model="gemini-3.8-flash",
         client=SimpleNamespace(models=models),
     )
 
@@ -208,7 +208,7 @@ def test_gemini_adapter_uses_pydantic_structured_output() -> None:
 
     assert result.candidates == [candidate]
     assert result.request_id == "req-gemini-1"
-    assert models.kwargs["model"] == "gemini-2.5-flash"
+    assert models.kwargs["model"] == "gemini-3.8-flash"
     assert models.kwargs["config"].response_mime_type == "application/json"
     assert models.kwargs["config"].response_schema is FactCandidateBatch
     assert models.kwargs["config"].system_instruction == SYSTEM_PROMPT

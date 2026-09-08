@@ -22,7 +22,7 @@ class GeminiStructuredFactAdapter:
 
     def __init__(
         self,
-        model: str = "gemini-2.5-flash",
+        model: str = "gemini-3.8-flash",
         *,
         api_key: str | None = None,
         client: Any | None = None,
@@ -69,7 +69,6 @@ class GeminiStructuredFactAdapter:
                     system_instruction=SYSTEM_PROMPT,
                     response_mime_type="application/json",
                     response_schema=FactCandidateBatch,
-                    temperature=0,
                 ),
             )
         except errors.APIError as exc:
