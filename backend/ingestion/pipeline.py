@@ -8,7 +8,12 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from backend.config import Settings
 from backend.db.repository import KnowledgeRepository
-from backend.extraction import EvidenceVerifier, FactExtractionAdapter, FactExtractionService
+from backend.extraction import (
+    EvidenceVerifier,
+    FactExtractionAdapter,
+    FactExtractionService,
+    GeminiStructuredFactAdapter,
+)
 from backend.extraction.openai_adapter import OpenAIStructuredFactAdapter
 from backend.ingestion.parser import PdfParser
 from backend.models import DocumentStatus
@@ -39,6 +44,12 @@ class DocumentProcessingService:
         self._adapter_factory = adapter_factory or self._default_adapter
 
     def _default_adapter(self) -> FactExtractionAdapter:
+        if self._settings.llm_provider == "gemini":
+            api_key = self._settings.gemini_api_key
+            return GeminiStructuredFactAdapter(
+                model=self._settings.llm_model,
+                api_key=api_key.get_secret_value() if api_key else None,
+            )
         api_key = self._settings.openai_api_key
         return OpenAIStructuredFactAdapter(
             model=self._settings.llm_model,

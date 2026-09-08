@@ -2,6 +2,7 @@
 
 from backend.extraction.adapter import FactExtractionAdapter
 from backend.extraction.errors import LlmConfigurationError, LlmExtractionError
+from backend.extraction.gemini_adapter import GeminiStructuredFactAdapter
 from backend.extraction.openai_adapter import OpenAIStructuredFactAdapter
 from backend.extraction.schemas import (
     AdapterExtractionResult,
@@ -26,6 +27,7 @@ __all__ = [
     "FactCandidateBatch",
     "FactExtractionAdapter",
     "FactExtractionService",
+    "GeminiStructuredFactAdapter",
     "LlmConfigurationError",
     "LlmExtractionError",
     "OpenAIStructuredFactAdapter",

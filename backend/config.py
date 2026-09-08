@@ -1,6 +1,7 @@
 """Application configuration loaded from environment variables."""
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,7 +19,9 @@ class Settings(BaseSettings):
     app_name: str = "Fact Knowledge Layer"
     environment: str = "development"
     database_url: str = Field(default="sqlite:///./fact_knowledge_layer.db")
+    llm_provider: Literal["openai", "gemini"] = "openai"
     llm_model: str = "gpt-5-mini"
+    gemini_api_key: SecretStr | None = None
     openai_api_key: SecretStr | None = None
     extraction_batch_char_limit: int = Field(default=50_000, ge=1)
     extraction_batch_page_limit: int = Field(default=8, ge=1)

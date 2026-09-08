@@ -10,6 +10,7 @@ from backend.extraction import (
     FactCandidate,
     FactCandidateBatch,
     FactExtractionService,
+    GeminiStructuredFactAdapter,
     LlmExtractionError,
 )
 from backend.extraction.openai_adapter import SYSTEM_PROMPT, OpenAIStructuredFactAdapter
@@ -173,6 +174,60 @@ def test_openai_adapter_rejects_missing_structured_payload() -> None:
     adapter = OpenAIStructuredFactAdapter(
         client=SimpleNamespace(responses=responses),
     )
+
+    with pytest.raises(LlmExtractionError, match="no structured"):
+        adapter.extract_facts([_page(1, "Some source text")])
+
+
+class _FakeGeminiModels:
+    def __init__(self, parsed: FactCandidateBatch | None, text: str | None = None) -> None:
+        self._parsed = parsed
+        self._text = text
+        self.kwargs = None
+
+    def generate_content(self, **kwargs):
+        self.kwargs = kwargs
+        return SimpleNamespace(
+            parsed=self._parsed,
+            text=self._text,
+            response_id="req-gemini-1",
+        )
+
+
+def test_gemini_adapter_uses_pydantic_structured_output() -> None:
+    candidate = _candidate(1, "Delhivery reported revenue of INR 100 crore in FY2024.")
+    models = _FakeGeminiModels(FactCandidateBatch(facts=[candidate]))
+    adapter = GeminiStructuredFactAdapter(
+        model="gemini-2.5-flash",
+        client=SimpleNamespace(models=models),
+    )
+
+    result = adapter.extract_facts(
+        [_page(1, "Delhivery reported revenue of INR 100 crore in FY2024.")]
+    )
+
+    assert result.candidates == [candidate]
+    assert result.request_id == "req-gemini-1"
+    assert models.kwargs["model"] == "gemini-2.5-flash"
+    assert models.kwargs["config"].response_mime_type == "application/json"
+    assert models.kwargs["config"].response_schema is FactCandidateBatch
+    assert models.kwargs["config"].system_instruction == SYSTEM_PROMPT
+    assert "physical_page_number" in models.kwargs["contents"]
+
+
+def test_gemini_adapter_validates_json_text_fallback() -> None:
+    candidate = _candidate(1, "Delhivery reported revenue of INR 100 crore in FY2024.")
+    models = _FakeGeminiModels(None, FactCandidateBatch(facts=[candidate]).model_dump_json())
+    adapter = GeminiStructuredFactAdapter(client=SimpleNamespace(models=models))
+
+    result = adapter.extract_facts([_page(1, "Some source text")])
+
+    assert result.candidates == [candidate]
+
+
+def test_gemini_adapter_rejects_missing_structured_payload() -> None:
+    models = _FakeGeminiModels(None)
+    adapter = GeminiStructuredFactAdapter(client=SimpleNamespace(models=models))
 
     with pytest.raises(LlmExtractionError, match="no structured"):
         adapter.extract_facts([_page(1, "Some source text")])

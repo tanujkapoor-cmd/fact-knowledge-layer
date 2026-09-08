@@ -38,10 +38,11 @@ queued -> ingesting -> extracting -> verifying -> normalizing -> classifying -> 
 
 ## Extraction boundary
 
-The application depends on a provider-neutral `FactExtractionAdapter`. The OpenAI implementation
-uses schema-constrained Pydantic output, but its response remains an untrusted candidate until the
-evidence verifier accepts it. PDF page text is sent as source data with its physical page number;
-the model is instructed not to follow instructions embedded in that text.
+The application depends on a provider-neutral `FactExtractionAdapter`. OpenAI and Google Gemini
+implementations both use schema-constrained Pydantic output, selected through environment
+configuration. Either provider's response remains an untrusted candidate until the evidence
+verifier accepts it. PDF page text is sent as source data with its physical page number; the model
+is instructed not to follow instructions embedded in that text.
 
 Pages are batched without splitting a physical page. Batch limits are configurable and do not
 depend on document names or expected schemas. Each returned page number must belong to the batch
