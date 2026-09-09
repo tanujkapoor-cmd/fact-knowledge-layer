@@ -1,103 +1,85 @@
 # Three-minute submission video
 
-Keep the final recording between 2:40 and 2:55. Use the local app with the completed starter-data
-database so the results are already available. Keep the repository open in a second tab and enlarge
-the browser to at least 1440 px. Do not show `.env`, the Gemini key, Render environment variables,
-or any secret-bearing terminal output.
-
-## Before recording
-
-1. Start the backend and React UI using the README commands.
-2. Confirm the three starter documents are visible and the relationship filters have results.
-3. Keep `sample_data/verified_demo_cases.json` open in GitHub or VS Code as a fallback for the
-   manually validated contradiction and handled failure.
-4. Prepare a small, text-based PDF for the live upload. Do not wait for a 100-page extraction during
-   the recording.
-5. Close personal tabs and notifications; zoom so evidence quotes and traces are readable.
+This version includes one real upload but does not wait for a large starter PDF. Use
+`output/pdf/quick-demo-company-update.pdf`, which is a one-page text PDF made for the live check.
+Keep the README and `sample_data/verified_demo_cases.json` open in separate tabs. Never show `.env`,
+the Gemini key, or the Render environment-variable page.
 
 ## Exact walkthrough and narration
 
-### 0:00–0:18 — Repository and problem
+### 0:00-0:15 - Introduce the project
 
-**On screen:** Show the GitHub repository title, then scroll just enough to show the architecture
-summary and live-demo link.
+**On screen:** GitHub repository, then click the live application link.
 
-**Say:** “This is my Fact Knowledge Layer for Superjoin. It accepts unseen PDFs, extracts atomic
-facts, grounds each fact in its source page, and explains cross-document relationships. The design
-principle is simple: no claim without a trail.”
+**Say:** “This is my Fact Knowledge Layer for Superjoin. It extracts facts from PDFs, verifies each
+fact against exact source text, and explains relationships across documents. My main rule is that
+the model can propose a fact, but it cannot approve its own evidence or relationship label.”
 
-### 0:18–0:42 — Upload and background processing
+### 0:15-0:38 - Upload the one-page PDF
 
-**On screen:** Open the application, upload the prepared small PDF, and point to its changing status
-and page progress in the source register. Then select one of the completed starter documents.
+**On screen:** Click **Upload PDF**, choose `quick-demo-company-update.pdf`, and click **Register &
+extract**. Point to the source status while it processes. Do not wait silently; continue speaking.
 
-**Say:** “I upload a PDF through React. FastAPI hashes it for duplicate reuse and processes it in the
-background. PyMuPDF preserves physical pages, printed labels, and offsets. Extraction runs in page
-batches, with checkpoints so a transient model failure does not discard completed work.”
+**Say:** “I am uploading a new one-page business update. FastAPI hashes the file for duplicate
+reuse and processes it with a background task. PyMuPDF keeps the physical page, printed label and
+character offsets. Extraction runs in checkpoints, so a provider retry does not throw away work.”
 
-### 0:42–1:08 — Facts and exact evidence
+### 0:38-1:02 - Show exact evidence
 
-**On screen:** Select a verified fact. In the evidence dossier, point to the claim, verbatim source
-quote, physical page, printed label, offsets, and the two fact confidence values.
+**On screen:** Open the README’s first interface image while the upload completes. Point to the
+claim, quote, page 51, printed label 100-101, offsets and two confidence values.
 
-**Say:** “Gemini proposes facts through a strict Pydantic schema, but is not trusted for grounding.
-The verifier independently finds the quote and recovers the actual source substring after text
-normalization. Extraction and evidence confidence remain separate because schema compliance is not
-source support.”
+**Say:** “Here is a completed starter-document fact. Gemini returned a structured candidate, then
+the verifier independently recovered this exact source passage. Extraction confidence and evidence
+confidence are separate because valid JSON does not prove that a claim is supported.”
 
-### 1:08–1:30 — Case one: corroboration
+### 1:02-1:25 - Corroboration
 
-**On screen:** Open the incorporation-date corroboration. Show the prospectus evidence on physical
-page 30, printed page 105, and annual-report evidence on physical page 51, printed pages 100–101.
-Show the first three reasoning checks.
+**On screen:** Open case 1 in `sample_data/verified_demo_cases.json`. Show both quotes and the first
+three reasoning checks.
 
-**Say:** “Case one is corroboration. The prospectus and annual report both state June twenty-second,
-twenty-eleven as the incorporation date. The normalized entities, predicates, and complete dates
-match, so deterministic code returns corroborates.”
+**Say:** “The first relationship is corroboration. The prospectus and annual report both give June
+twenty-second, twenty-eleven as Delhivery’s incorporation date. Entity, predicate and normalized
+date all match, so deterministic code returns corroborates.”
 
-### 1:30–1:52 — Case two: likely contradiction
+### 1:25-1:48 - Likely contradiction
 
-**On screen:** Open `sample_data/verified_demo_cases.json` at the employee-count case, then show the
-two evidence passages or the saved page references: annual-report physical pages 34 and 51.
+**On screen:** Scroll to case 2 and show values 23,381 and 18,527 with their page references.
 
-**Say:** “Case two is a manually validated likely contradiction. The annual report states
-twenty-three thousand three hundred eighty-one permanent employees for March thirty-first,
-twenty-twenty-four, while its year-end table reports eighteen thousand five hundred twenty-seven.
-No disclosed context reconciles them. Because production blocking is cross-document, evaluation
-honestly marks this same-document pair as missing.”
+**Say:** “The second case is a manually validated likely contradiction. The same annual report
+gives two different permanent-employee totals for the same year end, and the page context does not
+explain the difference. Evaluation records this as missing because production candidate generation
+is intentionally cross-document.”
 
-### 1:52–2:16 — Case three: reconciliation
+### 1:48-2:12 - Contextual reconciliation
 
-**On screen:** Return to the relationship explorer and open the EBITDA-margin reconciliation. Point
-to Fiscal 2019 at negative 8.29% and FY24 at positive 1.6%, then the `time_period` reasoning step.
+**On screen:** Show the README reconciliation screenshot. Point to the `time_period` step.
 
-**Say:** “Case three looks contradictory until context is checked. EBITDA margin is negative 8.29%
-in Fiscal 2019 and positive 1.6% in FY24. The ordered trace checks rounding and then time. Different
-periods explain the difference, so it returns reconciled.”
+**Say:** “The third case initially looks inconsistent: EBITDA margin is negative 8.29 percent in
+Fiscal 2019 and positive 1.6 percent in FY24. The values differ, but so do the reporting periods.
+The trace therefore returns reconciled, not contradicted.”
 
-### 2:16–2:35 — Case four: handled failure
+### 2:12-2:34 - Handled failure
 
-**On screen:** Show the excluded incorporation claim in the saved cases or UI. Highlight the exact
-quote and the classification-exclusion reason.
+**On screen:** Show the README unsupported-claim screenshot and its exclusion reason.
 
-**Say:** “Case four is a handled failure. The model mistakes 2011 inside a corporate identity number
-for an incorporation date. The quote exists, so alignment stays verified, but a separate support
-guard finds no incorporation cue. The fact remains auditable and is excluded from relationships.”
+**Say:** “This is a handled extraction failure. The model read 2011 from a corporate identity
+number as an incorporation date. The quote exists, but it does not support that predicate. The
+fact stays visible and is excluded from relationship classification.”
 
-### 2:35–2:55 — Architecture, evaluation, and close
+### 2:34-2:55 - Architecture, evaluation and close
 
-**On screen:** Briefly show `backend/reasoning/normalize.py`, `backend/reasoning/classify.py`, then
-the evaluation result in the README. End on the application.
+**On screen:** Scroll to the README architecture and evaluation table, then return to the app.
 
-**Say:** “The LLM extracts candidates; normalization and classification are deterministic. The
-checked-in evaluation uses fifteen labelled facts and eight relationship pairs, with exact quotes
-and an explicit missing column. The result is general, inspectable, and honest about limitations.”
+**Say:** “The LLM is isolated behind an extraction adapter. Normalization and classification are
+pure deterministic Python, and every relationship stores its ordered trace. The checked-in manual
+evaluation covers fifteen facts and eight relationship pairs. The system is small, inspectable and
+clear about its current limitations.”
 
-## Final recording checklist
+## Final check
 
-- The recording visibly shows a PDF entering processing.
-- The first three required cases show both source evidence and reasoning.
-- The fourth case explains the failure and the implemented handling.
-- No API key or `.env` contents appear.
-- The final video is public or link-accessible, at most three minutes, and its URL replaces the
-  README placeholder.
+- A new PDF is visibly uploaded and enters processing.
+- The first three cases show evidence plus reasoning.
+- The failure case shows its exact handling.
+- No secret or environment-variable screen is visible.
+- The recording is under three minutes and its public URL replaces the README placeholder.

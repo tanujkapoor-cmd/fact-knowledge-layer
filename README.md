@@ -4,8 +4,8 @@ I built this to answer a fairly simple question: when an AI extracts a fact from
 
 The model proposes facts. The application then checks each quote against the stated PDF page, recovers the real source text, normalizes comparable values, and runs a deterministic relationship classifier. The model never gets to label two facts as corroborating or contradictory by itself.
 
-**Live application:** https://fact-knowledge-layer-w8jv.onrender.com/  
-**API documentation:** https://fact-knowledge-layer-w8jv.onrender.com/docs
+**Live application:** https://fact-knowledge-layer-npbn.onrender.com/
+**API documentation:** https://fact-knowledge-layer-npbn.onrender.com/docs
 
 ![A verified incorporation-date fact with its source page, printed label, offsets and confidence scores](docs/images/evidence-dossier.png)
 
