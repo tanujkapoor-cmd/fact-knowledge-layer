@@ -55,6 +55,16 @@ function Navigation({ activeView, onViewChange }: { activeView: ViewId; onViewCh
 }
 
 export function AppShell({ activeView, onViewChange, apiState, apiDocsUrl, children }: AppShellProps) {
+  function openUploadPicker() {
+    onViewChange("documents")
+    window.setTimeout(() => {
+      const inputId = window.matchMedia("(min-width: 1024px)").matches
+        ? "desktop-pdf-upload"
+        : "pdf-upload"
+      document.getElementById(inputId)?.click()
+    }, 0)
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-20 border-b border-border bg-card">
@@ -100,7 +110,7 @@ export function AppShell({ activeView, onViewChange, apiState, apiDocsUrl, child
                 <ExternalLink className="size-4" aria-hidden="true" />
               </a>
             </Button>
-            <Button size="sm" onClick={() => onViewChange("documents")}>
+            <Button size="sm" onClick={openUploadPicker}>
               <FilePlus2 className="size-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">Upload PDF</span>
             </Button>
