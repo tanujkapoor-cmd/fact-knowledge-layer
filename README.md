@@ -55,7 +55,7 @@ cd frontend && npm run lint && npm run build
 
 ## Video Demo
 
-> **Demo video:** [add final public video link here]
+> **Demo video:** [Watch the 3-minute demo](https://drive.google.com/file/d/1dJkN0NMonkdqzXWYNVPbzFp0fAA5ABNP/view)
 
 The final recording must be three minutes or less. I prepared a timed walkthrough and the exact narration in [`docs/video-demo-script.md`](docs/video-demo-script.md). It covers the four cases requested in the assignment:
 
@@ -64,7 +64,7 @@ The final recording must be three minutes or less. I prepared a timed walkthroug
 3. a value difference explained by context; and
 4. an extraction, evidence or provider failure that is kept with its reason.
 
-The exact facts used for those four cases are in [`sample_data/verified_demo_cases.json`](sample_data/verified_demo_cases.json). The link above is the only item that still needs to be replaced after recording.
+The exact facts used for those four cases are in [`sample_data/verified_demo_cases.json`](sample_data/verified_demo_cases.json).
 
 ## What the Interface Shows
 
