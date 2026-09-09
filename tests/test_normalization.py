@@ -29,6 +29,15 @@ def test_entity_normalization_removes_legal_suffixes_and_punctuation() -> None:
     assert normalized.alias_applied is False
 
 
+def test_entity_normalization_preserves_distinguishing_compound_name() -> None:
+    parent = normalize_entity_name("Delhivery Limited")
+    subsidiary = normalize_entity_name("Delhivery Corp Limited")
+
+    assert parent.comparison_key == "delhivery"
+    assert subsidiary.comparison_key == "delhivery corp"
+    assert parent.comparison_key != subsidiary.comparison_key
+
+
 def test_entity_aliases_are_explicit_and_deterministic() -> None:
     aliases = {"DLVRY": "Delhivery Limited"}
 
@@ -124,10 +133,29 @@ def test_text_values_are_canonicalized_without_inventing_a_number() -> None:
     assert normalized.normalized_numeric_value is None
 
 
+def test_calendar_dates_compare_as_complete_dates_not_day_numbers() -> None:
+    first = normalize_value("June 22, 2011")
+    equivalent = normalize_value("22 June 2011")
+    different = normalize_value("May 22, 2022")
+
+    assert first.kind is ValueKind.TEXT
+    assert first.normalized_text == equivalent.normalized_text == "2011-06-22"
+    assert different.normalized_text == "2022-05-22"
+
+
+def test_alphanumeric_identifiers_are_not_reduced_to_embedded_numbers() -> None:
+    listed = normalize_value("L63090DL2011PLC221234")
+    unlisted = normalize_value("U63090DL2011PLC221234")
+
+    assert listed.kind is ValueKind.TEXT
+    assert listed.normalized_text != unlisted.normalized_text
+
+
 @pytest.mark.parametrize(
     ("scope", "expected_start", "expected_end", "granularity"),
     [
         ("FY2024", date(2023, 4, 1), date(2024, 3, 31), TemporalGranularity.FISCAL_YEAR),
+        ("Fiscal 2019", date(2018, 4, 1), date(2019, 3, 31), TemporalGranularity.FISCAL_YEAR),
         (
             "Financial year 2023-24",
             date(2023, 4, 1),

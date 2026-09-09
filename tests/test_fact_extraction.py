@@ -104,6 +104,57 @@ def test_service_rejects_model_page_outside_supplied_batch() -> None:
     assert record.classification_eligible is False
 
 
+def test_document_date_cannot_masquerade_as_incorporation_date() -> None:
+    page = _page(1, "Prospectus dated May 14, 2022")
+    candidate = FactCandidate(
+        subject="Delhivery Limited",
+        predicate="incorporation date",
+        value="May 14, 2022",
+        unit=None,
+        currency=None,
+        temporal_scope=None,
+        scope=None,
+        data_vintage=None,
+        evidence_quote=page.text,
+        page_number=1,
+    )
+
+    record = (
+        FactExtractionService(FakeAdapter([[candidate]]))
+        .extract_document(ParsedPdf(sha256="d" * 64, page_count=1, text=page.text, pages=[page]))
+        .facts[0]
+    )
+
+    assert record.evidence.status is EvidenceStatus.VERIFIED
+    assert record.classification_eligible is False
+    assert "document or filing date" in record.classification_exclusion_reason
+
+
+def test_explicit_incorporation_quote_remains_classification_eligible() -> None:
+    page = _page(1, "Delhivery Limited was incorporated on June 22, 2011.")
+    candidate = FactCandidate(
+        subject="Delhivery Limited",
+        predicate="incorporation date",
+        value="June 22, 2011",
+        unit=None,
+        currency=None,
+        temporal_scope=None,
+        scope=None,
+        data_vintage=None,
+        evidence_quote=page.text,
+        page_number=1,
+    )
+
+    record = (
+        FactExtractionService(FakeAdapter([[candidate]]))
+        .extract_document(ParsedPdf(sha256="e" * 64, page_count=1, text=page.text, pages=[page]))
+        .facts[0]
+    )
+
+    assert record.classification_eligible is True
+    assert record.classification_exclusion_reason is None
+
+
 def test_service_batches_without_splitting_pages() -> None:
     first = _page(1, "A" * 10)
     second = _page(2, "B" * 10, document_start=11)

@@ -74,6 +74,7 @@ class FactResponse(ApiModel):
     verification: VerificationDetailsResponse
     confidence: FactConfidence
     classification_eligible: bool
+    classification_exclusion_reason: str | None = None
 
 
 class RelationshipResponse(ApiModel):

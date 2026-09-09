@@ -114,12 +114,21 @@ class ExtractedFactRecord(ExtractionModel):
     verification: EvidenceVerification
     confidence: FactConfidence
     classification_eligible: bool
+    classification_exclusion_reason: str | None = None
 
     @model_validator(mode="after")
     def validate_eligibility(self) -> Self:
         is_verified = self.evidence.status is EvidenceStatus.VERIFIED
-        if self.classification_eligible != is_verified:
-            raise ValueError("only evidence-verified facts are classification eligible")
+        if self.classification_eligible and not is_verified:
+            raise ValueError("classification-eligible facts require verified evidence")
+        if self.classification_eligible and self.classification_exclusion_reason:
+            raise ValueError("classification-eligible facts cannot have an exclusion reason")
+        if (
+            is_verified
+            and not self.classification_eligible
+            and not self.classification_exclusion_reason
+        ):
+            raise ValueError("verified but excluded facts require an exclusion reason")
         if self.verification.status is not self.evidence.status:
             raise ValueError("verification details and evidence status must agree")
         return self

@@ -80,6 +80,7 @@ class FactRow(Base):
     verification_method: Mapped[str] = mapped_column(String(32))
     verification_similarity: Mapped[float] = mapped_column(Float)
     classification_eligible: Mapped[bool] = mapped_column(Boolean, index=True)
+    classification_exclusion_reason: Mapped[str | None] = mapped_column(Text)
     extraction_confidence: Mapped[dict[str, Any]] = mapped_column(JSON)
     evidence_confidence: Mapped[dict[str, Any]] = mapped_column(JSON)
     normalized_payload: Mapped[dict[str, Any] | None] = mapped_column(JSON)

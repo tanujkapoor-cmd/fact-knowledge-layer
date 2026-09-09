@@ -138,9 +138,18 @@ export function FactInspector({ fact, label, source }: { fact: Fact; label?: str
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3 font-mono text-[9px] uppercase tracking-[0.06em] text-muted-foreground">
           <span>Classification gate</span>
           <span className={fact.classification_eligible ? "text-emerald-800" : "text-red-800"}>
-            {fact.classification_eligible ? "Eligible · evidence verified" : "Excluded · verification failed"}
+            {fact.classification_eligible
+              ? "Eligible · evidence verified"
+              : fact.classification_exclusion_reason
+                ? "Excluded · claim unsupported"
+                : "Excluded · verification failed"}
           </span>
         </div>
+        {fact.classification_exclusion_reason ? (
+          <p className="mt-2 border-l-2 border-amber-500 pl-3 text-xs leading-5 text-amber-900">
+            {fact.classification_exclusion_reason}
+          </p>
+        ) : null}
       </section>
     </article>
   )

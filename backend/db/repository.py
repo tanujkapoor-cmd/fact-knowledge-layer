@@ -182,6 +182,7 @@ class KnowledgeRepository:
             verification_method=record.verification.method.value,
             verification_similarity=record.verification.similarity_score,
             classification_eligible=record.classification_eligible,
+            classification_exclusion_reason=record.classification_exclusion_reason,
             extraction_confidence=record.confidence.extraction.model_dump(mode="json"),
             evidence_confidence=record.confidence.evidence_verification.model_dump(mode="json"),
             normalized_payload=normalized.model_dump(mode="json") if normalized else None,

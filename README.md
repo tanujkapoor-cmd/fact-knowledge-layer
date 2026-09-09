@@ -24,7 +24,7 @@ Copy `.env.example` to `.env` and set one provider key. The default configuratio
 
 ```dotenv
 FKL_LLM_PROVIDER=gemini
-FKL_LLM_MODEL=gemini-3.7-flash
+FKL_LLM_MODEL=gemini-3.5-flash-lite
 FKL_GEMINI_API_KEY=your_key_here
 ```
 
@@ -53,14 +53,46 @@ cd frontend && npm run lint && npm run build
 
 ## Video Demo
 
-The final three-minute walkthrough still needs to be recorded and linked here before submission. It should show one PDF upload followed by these four saved cases:
+**Video link placeholder:** `[PASTE THE FINAL PUBLIC VIDEO URL HERE]`
+
+The recording must be three minutes or less. A timed screen plan and exact narration are in
+[`docs/video-demo-script.md`](docs/video-demo-script.md). It covers a live PDF upload and the four
+cases required by the assignment:
 
 1. corroboration across documents;
 2. a genuine or likely contradiction;
 3. a difference reconciled by time, scope, units, currency, data vintage, or rounding; and
 4. an evidence-verification or provider failure retained with its reason.
 
-This is deliberately marked as pending rather than linking to fabricated footage.
+The four audited examples used in the recording are saved in
+[`sample_data/verified_demo_cases.json`](sample_data/verified_demo_cases.json). Replace the link
+placeholder above after recording; do not submit with the placeholder unchanged.
+
+## Interface Screenshots
+
+> **Screenshot placeholder 1 — Upload and source register**
+
+Add a full-width image showing a PDF selected or processing in the left source register, with the
+processing status and page checkpoint visible. This demonstrates arbitrary PDF upload, background
+processing, and incremental progress.
+
+> **Screenshot placeholder 2 — Fact ledger and evidence dossier**
+
+Add an image with one fact selected in the centre ledger and the right evidence panel open. Make
+the physical page, printed page label, verbatim quote, offsets, verification method, provenance,
+and separate confidence values readable.
+
+> **Screenshot placeholder 3 — Relationship decision trace**
+
+Add an image of the relationship explorer filtered to `reconciled` or `corroborates`, showing both
+facts and the ordered deterministic checks. This is the clearest proof that the LLM does not choose
+the relationship label.
+
+> **Screenshot placeholder 4 — Honest failure handling**
+
+Add an image of an excluded fact or failed upload with its precise reason visible. Prefer the saved
+unsupported-incorporation example: its quote exists, but the quote does not support that predicate,
+so it is excluded from relationship classification.
 
 ## Approach
 
@@ -129,16 +161,23 @@ The harness reports extraction precision/recall, exact-evidence-quote rate, and 
 ### Starter-dataset smoke run
 
 On 9 September 2026, all three Delhivery starter PDFs completed with a real Gemini key using
-`gemini-3.5-flash-lite` and extraction prompt v3. The run retained 1,240 candidates: 1,019 with
-verified source evidence and 221 rejected evidence matches. Deterministic blocking produced eight
-relationships: one corroboration, four contradictions, one contextual reconciliation, and two
-uncertain decisions.
+`gemini-3.5-flash-lite` and extraction prompt v4. The clean run retained 2,298 candidates. Evidence
+alignment verified 1,812 quotes; 1,806 facts were eligible for comparison and six aligned quotes
+were separately excluded because they did not semantically support an incorporation-date claim.
+Deterministic blocking produced 210 cross-document relationships: three corroborations, 143
+contextual reconciliations, and 64 uncertain decisions. A false contradiction caused by an entity
+suffix collision was found during manual review and fixed rather than presented as a success.
 
-These counts prove the complete pipeline and all four UI states execute; they are **not accuracy
-scores**. In particular, some contradiction candidates expose extraction errors even though their
-quotes are real. Human labels are still required before making quality claims. The full auditable
-API export is in `sample_data/delhivery_sample_output.json`; the neutral scoring export is in
-`evaluation/predictions.sample.json`.
+The hand-labelled set contains 15 facts and eight relationship pairs. The current result is 100%
+recall and an exact-quote rate of 100% on those labels, with 7/8 relationship decisions correct. The
+reported extraction precision of 13.5% is deliberately conservative because every additional
+verified candidate on the selected dense pages counts as a false positive. The one missing
+relationship is a likely contradiction inside one PDF; production relationship generation is
+intentionally cross-document only. These are prototype measurements, not general accuracy claims.
+
+The full API export is in `sample_data/delhivery_sample_output.json`, the evaluation inputs are in
+`evaluation/ground_truth.json` and `evaluation/predictions.corrected.json`, and machine-readable
+results are in `evaluation/results/eval_results.json`.
 
 ## Deployment
 
@@ -158,7 +197,10 @@ SQLite on a free ephemeral container is suitable for a short demonstration but n
 - Currency conversion requires an explicit dated rate table and is not guessed from current market data.
 - Background tasks and the status dictionary assume one Uvicorn worker; a durable job queue would be needed at larger scale.
 - Free-tier model capacity can return transient `503` responses. Retries and checkpoints preserve the failure honestly, but cannot create provider capacity.
-- The human-labelled starter-dataset evaluation and demo-video link remain manual submission steps.
+- Relationship candidate generation intentionally compares facts across different documents. The
+  manually validated same-document employee-count discrepancy is therefore recorded as a known
+  missing relationship rather than silently injected into the production result.
+- The final demo-video URL and four UI screenshots are submission-owner placeholders in this README.
 
 ## Additional Notes
 

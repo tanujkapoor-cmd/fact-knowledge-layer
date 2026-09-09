@@ -60,6 +60,7 @@ def present_fact(row: FactRow) -> FactResponse:
                 evidence_verification=ConfidenceScore.model_validate(row.evidence_confidence),
             ),
             "classification_eligible": row.classification_eligible,
+            "classification_exclusion_reason": row.classification_exclusion_reason,
         }
     )
 

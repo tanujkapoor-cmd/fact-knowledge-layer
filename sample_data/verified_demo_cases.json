@@ -1,0 +1,143 @@
+{
+  "source_run": {
+    "date": "2026-09-09",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt_version": "fact-extraction-v4",
+    "physical_page_numbers_are_one_based": true
+  },
+  "cases": [
+    {
+      "case": 1,
+      "required_type": "corroboration_across_documents",
+      "classification": "corroborates",
+      "validation": "Both passages explicitly state the same incorporation date.",
+      "fact_a": {
+        "document": "02-delhivery-annual-report-fy24-excerpt.pdf",
+        "subject": "Delhivery Limited",
+        "predicate": "incorporation date",
+        "value": "June 22, 2011",
+        "physical_page_number": 51,
+        "printed_page_label": "100–101",
+        "start_offset": 1330,
+        "end_offset": 1400,
+        "quote": "Year of incorporation                                    June 22, 2011"
+      },
+      "fact_b": {
+        "document": "01-delhivery-prospectus-2022-excerpt.pdf",
+        "subject": "Delhivery Limited",
+        "predicate": "incorporation date",
+        "value": "June 22, 2011",
+        "physical_page_number": 30,
+        "printed_page_label": "105",
+        "start_offset": 44,
+        "end_offset": 245,
+        "quote": "Our Company was incorporated as “SSN Logistics Private Limited”, a private limited company, under the\nCompanies Act, 1956, pursuant to a certificate of incorporation issued by the RoC on June 22, 2011."
+      },
+      "reasoning_trace": [
+        {"order": 1, "check": "same_entity", "outcome": "passed", "details": {"canonical_entity": "delhivery"}},
+        {"order": 2, "check": "same_predicate", "outcome": "passed", "details": {"canonical_predicate": "incorporation date"}},
+        {"order": 3, "check": "normalized_value_equality", "outcome": "passed", "details": {"value_a": "2011-06-22", "value_b": "2011-06-22"}}
+      ]
+    },
+    {
+      "case": 2,
+      "required_type": "genuine_or_likely_contradiction",
+      "classification": "contradicts",
+      "validation": "Manual page review found no disclosed distinction that reconciles these two FY24 permanent-employee totals.",
+      "production_status": "Known missing relationship because production blocking is cross-document only; evaluation records it in the missing column.",
+      "fact_a": {
+        "document": "02-delhivery-annual-report-fy24-excerpt.pdf",
+        "subject": "Delhivery Limited",
+        "predicate": "permanent employee count",
+        "value": "23,381",
+        "temporal_scope": "as on March 31, 2024",
+        "physical_page_number": 34,
+        "printed_page_label": "66–67",
+        "start_offset": 2955,
+        "end_offset": 3036,
+        "quote": "Permanent employees on the rolls of the Company were 23,381 as on March 31, 2024."
+      },
+      "fact_b": {
+        "document": "02-delhivery-annual-report-fy24-excerpt.pdf",
+        "subject": "Delhivery Limited",
+        "predicate": "permanent employee count",
+        "value": "18,527",
+        "temporal_scope": "end of FY24, established by the table heading",
+        "physical_page_number": 51,
+        "printed_page_label": "100–101",
+        "start_offset": 5017,
+        "end_offset": 5128,
+        "quote": "Permanent (D)                                         18,527       17,072      92.15%         1,455       7.85%"
+      },
+      "reasoning_trace": [
+        {"order": 1, "check": "same_entity", "outcome": "passed"},
+        {"order": 2, "check": "same_predicate", "outcome": "passed"},
+        {"order": 3, "check": "normalized_value_equality", "outcome": "failed", "details": {"value_a": "23381", "value_b": "18527"}},
+        {"order": 4, "check": "rounding", "outcome": "failed"},
+        {"order": 5, "check": "time_period", "outcome": "failed", "details": {"comparison": "same"}},
+        {"order": 6, "check": "data_vintage", "outcome": "failed", "details": {"comparison": "same"}},
+        {"order": 7, "check": "unit", "outcome": "failed", "details": {"comparison": "same"}},
+        {"order": 8, "check": "currency", "outcome": "failed", "details": {"comparison": "not applicable"}},
+        {"order": 9, "check": "scope", "outcome": "failed", "details": {"comparison": "same"}}
+      ]
+    },
+    {
+      "case": 3,
+      "required_type": "apparent_contradiction_reconciled_by_context",
+      "classification": "reconciled",
+      "reconciliation_reasons": ["time_period"],
+      "fact_a": {
+        "document": "01-delhivery-prospectus-2022-excerpt.pdf",
+        "subject": "Delhivery",
+        "predicate": "EBITDA margin",
+        "value": "(8.29)%",
+        "temporal_scope": "Fiscal 2019",
+        "physical_page_number": 59,
+        "printed_page_label": "229",
+        "start_offset": 623,
+        "end_offset": 733,
+        "quote": "Our EBITDA margin\nimproved from (8.29)% in Fiscal 2019 to (6.19)% in Fiscal 2020 and to (2.75)% in Fiscal 2021"
+      },
+      "fact_b": {
+        "document": "02-delhivery-annual-report-fy24-excerpt.pdf",
+        "subject": "Delhivery",
+        "predicate": "EBITDA margin",
+        "value": "1.6%",
+        "temporal_scope": "FY24",
+        "physical_page_number": 4,
+        "printed_page_label": "6–7",
+        "start_offset": 2658,
+        "end_offset": 2676,
+        "quote": "1.6% EBITDA margin"
+      },
+      "reasoning_trace": [
+        {"order": 1, "check": "same_entity", "outcome": "passed"},
+        {"order": 2, "check": "same_predicate", "outcome": "passed"},
+        {"order": 3, "check": "normalized_value_equality", "outcome": "failed", "details": {"value_a": "-0.0829", "value_b": "0.016"}},
+        {"order": 4, "check": "rounding", "outcome": "failed"},
+        {"order": 5, "check": "time_period", "outcome": "passed", "details": {"comparison": "different"}}
+      ]
+    },
+    {
+      "case": 4,
+      "required_type": "extraction_or_reasoning_failure",
+      "failure": "The model inferred an incorporation date from the year embedded in a corporate identity number.",
+      "handling": "The quote remains verified because it exists, but a separate deterministic semantic-support guard excludes the claim from relationship classification.",
+      "fact": {
+        "document": "01-delhivery-prospectus-2022-excerpt.pdf",
+        "subject": "DELIVERY LIMITED",
+        "predicate": "incorporation date",
+        "value": "2011",
+        "physical_page_number": 1,
+        "printed_page_label": null,
+        "start_offset": 699,
+        "end_offset": 783,
+        "quote": "ELHIVERY LIMITED\n                   CORPORATE IDENTITY NUMBER: U63090DL2011PLC221234",
+        "evidence_status": "verified",
+        "classification_eligible": false,
+        "classification_exclusion_reason": "the quote contains no incorporation, founding, establishment, or formation cue; a document or filing date cannot support an incorporation-date claim"
+      }
+    }
+  ]
+}

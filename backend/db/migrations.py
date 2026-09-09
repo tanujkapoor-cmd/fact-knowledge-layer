@@ -15,6 +15,7 @@ _ADDITIVE_COLUMNS = {
     "facts": {
         "scope": "TEXT",
         "data_vintage": "TEXT",
+        "classification_exclusion_reason": "TEXT",
     },
 }
 

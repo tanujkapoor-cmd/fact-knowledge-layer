@@ -10,7 +10,7 @@ services:
       - key: FKL_LLM_PROVIDER
         value: gemini
       - key: FKL_LLM_MODEL
-        value: gemini-3.7-flash
+        value: gemini-3.5-flash-lite
       - key: FKL_ALIAS_CONFIG_PATH
         value: config/aliases.example.json
       - key: FKL_GEMINI_API_KEY

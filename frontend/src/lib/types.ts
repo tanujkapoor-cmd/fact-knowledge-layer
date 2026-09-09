@@ -57,6 +57,7 @@ export interface Fact {
   }
   confidence: FactConfidence
   classification_eligible: boolean
+  classification_exclusion_reason: string | null
 }
 
 export interface ReasoningStep {

@@ -1,0 +1,58 @@
+{
+  "extraction": {
+    "true_positives": 15,
+    "false_positives": 96,
+    "false_negatives": 0,
+    "precision": 0.13513513513513514,
+    "recall": 1.0,
+    "exact_evidence_quote_rate": 1.0
+  },
+  "relationships": {
+    "labels": [
+      "corroborates",
+      "contradicts",
+      "reconciled",
+      "uncertain"
+    ],
+    "prediction_labels": [
+      "corroborates",
+      "contradicts",
+      "reconciled",
+      "uncertain",
+      "missing"
+    ],
+    "confusion_matrix": [
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        6,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "accuracy": 0.875,
+    "evaluated_pairs": 8,
+    "missing_predictions": 1
+  }
+}

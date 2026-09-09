@@ -66,6 +66,7 @@ _CORPORATE_SUFFIXES = {
     "private",
     "pvt",
 }
+_COMPOUND_PREFIX_SUFFIXES = {"private", "pvt"}
 
 _SCALE_FACTORS = {
     "hundred": Decimal("100"),
@@ -202,8 +203,10 @@ def normalize_entity_name(
         tokens.pop(0)
 
     removed_suffixes: list[str] = []
-    while tokens and tokens[-1] in _CORPORATE_SUFFIXES:
+    if tokens and tokens[-1] in _CORPORATE_SUFFIXES:
         removed_suffixes.insert(0, tokens.pop())
+        if tokens and tokens[-1] in _COMPOUND_PREFIX_SUFFIXES:
+            removed_suffixes.insert(0, tokens.pop())
 
     comparison_key = " ".join(tokens) or original_key
     alias_index = {
@@ -214,8 +217,10 @@ def normalize_entity_name(
         canonical_name = alias_target
         alias_key = _comparison_key(alias_target)
         alias_tokens = alias_key.split()
-        while alias_tokens and alias_tokens[-1] in _CORPORATE_SUFFIXES:
+        if alias_tokens and alias_tokens[-1] in _CORPORATE_SUFFIXES:
             alias_tokens.pop()
+            if alias_tokens and alias_tokens[-1] in _COMPOUND_PREFIX_SUFFIXES:
+                alias_tokens.pop()
         comparison_key = " ".join(alias_tokens) or alias_key
     else:
         canonical_name = comparison_key
@@ -277,6 +282,23 @@ def _parse_number(value: str) -> Decimal | None:
     if match.group("sign") == "-" or match.group("parenthesized"):
         return -number
     return number
+
+
+def _parse_full_date_value(value: str) -> date | None:
+    """Parse a value only when the entire field is a calendar date."""
+
+    stripped = value.strip()
+    for pattern in _DATE_PATTERNS:
+        match = pattern.fullmatch(stripped)
+        if not match:
+            continue
+        month_value = match.group("month")
+        month = int(month_value) if month_value.isdigit() else _MONTHS[month_value.casefold()]
+        try:
+            return date(int(match.group("year")), month, int(match.group("day")))
+        except ValueError:
+            return None
+    return None
 
 
 def _numeric_quantum(value: str) -> Decimal | None:
@@ -342,11 +364,34 @@ def normalize_value(
 ) -> NormalizedValue:
     """Normalize numeric scale, unit, and optional currency conversion."""
 
-    numeric_value = _parse_number(value)
-    numeric_quantum = _numeric_quantum(value)
     source_currency = _canonical_currency(currency, value)
     scale_name, scale_factor = _find_scale(value, unit)
     _, unit_spec = _find_unit(value, unit, scale_name)
+    parsed_date = _parse_full_date_value(value)
+    has_untyped_letters_and_digits = (
+        source_currency is None
+        and unit_spec.canonical_unit is None
+        and re.search(r"[A-Za-z]", value) is not None
+        and re.search(r"\d", value) is not None
+    )
+
+    if parsed_date is not None or has_untyped_letters_and_digits:
+        normalized_text = (
+            parsed_date.isoformat() if parsed_date is not None else _comparison_key(value)
+        )
+        return NormalizedValue(
+            kind=ValueKind.TEXT,
+            original_value=value,
+            normalized_text=normalized_text,
+            original_unit=unit,
+            canonical_unit=unit_spec.canonical_unit,
+            unit_dimension=unit_spec.dimension,
+            original_currency=currency,
+            canonical_currency=source_currency,
+        )
+
+    numeric_value = _parse_number(value)
+    numeric_quantum = _numeric_quantum(value)
 
     if numeric_value is None:
         normalized_text = _comparison_key(value) or unicodedata.normalize("NFKC", value).casefold()
@@ -539,7 +584,7 @@ def parse_date_range(
             )
 
     fiscal_match = re.search(
-        r"\b(?:fy|fiscal\s+year|financial\s+year)\s*"
+        r"\b(?:fy|fiscal(?:\s+year)?|financial(?:\s+year)?)\s*"
         r"(?P<first>\d{2,4})(?:\s*[-/]\s*(?P<second>\d{2,4}))?\b",
         lowered,
     )

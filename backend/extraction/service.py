@@ -11,6 +11,7 @@ from backend.extraction.schemas import (
     ExtractionRun,
     FactCandidate,
 )
+from backend.extraction.support import classification_exclusion_reason
 from backend.extraction.verifier import EvidenceVerifier
 from backend.ingestion import ParsedPage, ParsedPdf
 from backend.models import EvidenceReference, EvidenceStatus
@@ -140,13 +141,20 @@ class FactExtractionService:
                     failure_reason=verification.failure_reason,
                 )
 
+            exclusion_reason = None
+            if evidence.status is EvidenceStatus.VERIFIED:
+                exclusion_reason = classification_exclusion_reason(candidate, evidence.quote)
+
             records.append(
                 ExtractedFactRecord(
                     candidate=candidate,
                     evidence=evidence,
                     verification=verification,
                     confidence=score_fact_confidence(candidate, evidence, verification),
-                    classification_eligible=evidence.status is EvidenceStatus.VERIFIED,
+                    classification_eligible=(
+                        evidence.status is EvidenceStatus.VERIFIED and exclusion_reason is None
+                    ),
+                    classification_exclusion_reason=exclusion_reason,
                 )
             )
 

@@ -1,0 +1,208 @@
+{
+  "scope": [
+    {
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "physical_pages": [30, 58, 59]
+    },
+    {
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "physical_pages": [4, 17, 34, 51, 68]
+    },
+    {
+      "document_key": "5ca307085c96c1fcbfd2d99a7ad40dcbd8958079b3833063520e4e84fdded2a8",
+      "physical_pages": [6, 7]
+    }
+  ],
+  "facts": [
+    {
+      "id": "gt-01",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery Limited",
+      "predicate": "incorporation date",
+      "value": "June 22, 2011",
+      "unit": null,
+      "currency": null,
+      "temporal_scope": null,
+      "physical_page_number": 30,
+      "evidence_quote": "Our Company was incorporated as “SSN Logistics Private Limited”, a private limited company, under the\nCompanies Act, 1956, pursuant to a certificate of incorporation issued by the RoC on June 22, 2011."
+    },
+    {
+      "id": "gt-02",
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "subject": "Delhivery Limited",
+      "predicate": "incorporation date",
+      "value": "June 22, 2011",
+      "unit": null,
+      "currency": null,
+      "temporal_scope": null,
+      "physical_page_number": 51,
+      "evidence_quote": "Year of incorporation                                    June 22, 2011"
+    },
+    {
+      "id": "gt-03",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "(8.29)",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "Fiscal 2019",
+      "physical_page_number": 59,
+      "evidence_quote": "Our EBITDA margin\nimproved from (8.29)% in Fiscal 2019 to (6.19)% in Fiscal 2020 and to (2.75)% in Fiscal 2021"
+    },
+    {
+      "id": "gt-04",
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "1.6",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "FY24",
+      "physical_page_number": 4,
+      "evidence_quote": "1.6% EBITDA margin"
+    },
+    {
+      "id": "gt-05",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "(6.19)",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "Fiscal 2020",
+      "physical_page_number": 59,
+      "evidence_quote": "Our EBITDA margin\nimproved from (8.29)% in Fiscal 2019 to (6.19)% in Fiscal 2020 and to (2.75)% in Fiscal 2021"
+    },
+    {
+      "id": "gt-06",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "(2.75)",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "Fiscal 2021",
+      "physical_page_number": 59,
+      "evidence_quote": "Our EBITDA margin\nimproved from (8.29)% in Fiscal 2019 to (6.19)% in Fiscal 2020 and to (2.75)% in Fiscal 2021"
+    },
+    {
+      "id": "gt-07",
+      "document_key": "5ca307085c96c1fcbfd2d99a7ad40dcbd8958079b3833063520e4e84fdded2a8",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "(6.3)",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "FY23",
+      "physical_page_number": 6,
+      "evidence_quote": "FY23: ₹(452) Cr / (6.3%)"
+    },
+    {
+      "id": "gt-08",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "(4.82)",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "nine months period ended December 31, 2021",
+      "physical_page_number": 59,
+      "evidence_quote": "while declining\nfrom (3.37)% in the nine months period ended December 31, 2020 to (4.82)% in the nine months period ended\nDecember 31, 2021."
+    },
+    {
+      "id": "gt-09",
+      "document_key": "5ca307085c96c1fcbfd2d99a7ad40dcbd8958079b3833063520e4e84fdded2a8",
+      "subject": "Delhivery",
+      "predicate": "EBITDA margin",
+      "value": "5.0",
+      "unit": "%",
+      "currency": null,
+      "temporal_scope": "Q3 FY24",
+      "physical_page_number": 7,
+      "evidence_quote": "Q3 FY24: ₹109 Cr / 5.0%"
+    },
+    {
+      "id": "gt-10",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery",
+      "predicate": "total income",
+      "value": "16,948.74",
+      "unit": "million",
+      "currency": "INR",
+      "temporal_scope": "Fiscal 2019",
+      "physical_page_number": 58,
+      "evidence_quote": "Our total income increased from ₹16,948.74 million in Fiscal\n2019 to ₹29,886.29 million in Fiscal 2020 and to ₹38,382.91 million in Fiscal 2021"
+    },
+    {
+      "id": "gt-11",
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "subject": "Delhivery Limited",
+      "predicate": "total income",
+      "value": "85,942.34",
+      "unit": "million",
+      "currency": "INR",
+      "temporal_scope": "for the year ended March 31, 2024",
+      "physical_page_number": 68,
+      "evidence_quote": "Total Income (I)                                                                                 85,942.34         75,302.49"
+    },
+    {
+      "id": "gt-12",
+      "document_key": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "subject": "Delhivery",
+      "predicate": "total income",
+      "value": "38,382.91",
+      "unit": "million",
+      "currency": "INR",
+      "temporal_scope": "Fiscal 2021",
+      "physical_page_number": 58,
+      "evidence_quote": "Our total income increased from ₹16,948.74 million in Fiscal\n2019 to ₹29,886.29 million in Fiscal 2020 and to ₹38,382.91 million in Fiscal 2021"
+    },
+    {
+      "id": "gt-13",
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "subject": "Delhivery Limited",
+      "predicate": "permanent employees count",
+      "value": "23,381",
+      "unit": null,
+      "currency": null,
+      "temporal_scope": "as on March 31, 2024",
+      "physical_page_number": 34,
+      "evidence_quote": "Permanent employees on the rolls of the Company were 23,381 as on March 31, 2024."
+    },
+    {
+      "id": "gt-14",
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "subject": "Delhivery Limited",
+      "predicate": "permanent employee count",
+      "value": "18,527",
+      "unit": "employees",
+      "currency": null,
+      "temporal_scope": null,
+      "physical_page_number": 51,
+      "evidence_quote": "Permanent (D)                                         18,527       17,072      92.15%         1,455       7.85%"
+    },
+    {
+      "id": "gt-15",
+      "document_key": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "subject": "Delhivery",
+      "predicate": "female employees",
+      "value": "5,594",
+      "unit": null,
+      "currency": null,
+      "temporal_scope": "FY24",
+      "physical_page_number": 17,
+      "evidence_quote": "Increased female employees to                                                                             5,594 in FY24"
+    }
+  ],
+  "relationships": [
+    {"id": "rel-01", "fact_a_id": "gt-01", "fact_b_id": "gt-02", "classification": "corroborates"},
+    {"id": "rel-02", "fact_a_id": "gt-03", "fact_b_id": "gt-04", "classification": "reconciled"},
+    {"id": "rel-03", "fact_a_id": "gt-05", "fact_b_id": "gt-04", "classification": "reconciled"},
+    {"id": "rel-04", "fact_a_id": "gt-06", "fact_b_id": "gt-07", "classification": "reconciled"},
+    {"id": "rel-05", "fact_a_id": "gt-08", "fact_b_id": "gt-09", "classification": "reconciled"},
+    {"id": "rel-06", "fact_a_id": "gt-10", "fact_b_id": "gt-11", "classification": "reconciled"},
+    {"id": "rel-07", "fact_a_id": "gt-12", "fact_b_id": "gt-11", "classification": "reconciled"},
+    {"id": "rel-08", "fact_a_id": "gt-13", "fact_b_id": "gt-14", "classification": "contradicts"}
+  ]
+}
