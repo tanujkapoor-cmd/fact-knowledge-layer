@@ -142,6 +142,9 @@ API export is in `sample_data/delhivery_sample_output.json`; the neutral scoring
 
 ## Deployment
 
+Live demo: **https://fact-knowledge-layer-w8jv.onrender.com/**  
+API documentation: **https://fact-knowledge-layer-w8jv.onrender.com/docs**
+
 The included multi-stage `Dockerfile` builds the React client and serves it from the FastAPI process. `render.yaml` defines a single-worker Render service, matching the assignment's simple in-memory background-status constraint. Set `FKL_GEMINI_API_KEY` in the host's secret environment variables—never commit it.
 
 SQLite on a free ephemeral container is suitable for a short demonstration but not durable production storage. Attach a persistent disk at `/data` or use a managed relational database for longer-lived deployment.
