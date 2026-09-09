@@ -104,9 +104,9 @@ export function RelationshipsView({
         </p>
       </header>
 
-      <Card className="bg-card">
-        <CardContent className="grid gap-4 p-4 lg:grid-cols-[0.8fr_1fr_1.4fr_auto] lg:items-end">
-          <label className="space-y-2">
+      <Card className="min-w-0 bg-card">
+        <CardContent className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 p-4 lg:grid-cols-[0.8fr_1fr_1.4fr_auto] lg:items-end">
+          <label className="min-w-0 space-y-2">
             <span className="field-label">Decision type</span>
             <Select
               value={classification}
@@ -124,7 +124,7 @@ export function RelationshipsView({
               </SelectContent>
             </Select>
           </label>
-          <label className="space-y-2">
+          <label className="min-w-0 space-y-2">
             <span className="field-label">Tracked document</span>
             <Select
               value={documents.some((document) => document.id === selectedDocumentId) ? selectedDocumentId : "all"}
@@ -143,7 +143,7 @@ export function RelationshipsView({
               </SelectContent>
             </Select>
           </label>
-          <label className="space-y-2">
+          <label className="min-w-0 space-y-2">
             <span className="field-label">Document ID override</span>
             <Input
               value={selectedDocumentId}
@@ -303,8 +303,8 @@ export function RelationshipsView({
                   </div>
                 </TabsContent>
                 <TabsContent value="sources" className="mt-2 space-y-4">
-                  <FactInspector fact={selectedRelationship.fact_a} label="Fact A" />
-                  <FactInspector fact={selectedRelationship.fact_b} label="Fact B" />
+                  <FactInspector fact={selectedRelationship.fact_a} source={documents.find((document) => document.id === selectedRelationship.fact_a.document_id)} label="Fact A" />
+                  <FactInspector fact={selectedRelationship.fact_b} source={documents.find((document) => document.id === selectedRelationship.fact_b.document_id)} label="Fact B" />
                 </TabsContent>
               </Tabs>
             </Card>

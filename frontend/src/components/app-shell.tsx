@@ -58,7 +58,7 @@ export function AppShell({ activeView, onViewChange, apiState, apiDocsUrl, child
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-20 border-b border-border bg-card">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] sm:flex sm:min-h-14 sm:items-stretch">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] lg:flex lg:min-h-14 lg:items-stretch">
           <button
             type="button"
             className="flex min-w-0 items-center gap-2.5 border-r border-border px-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-w-64 sm:shrink-0 sm:px-5"
@@ -113,7 +113,7 @@ export function AppShell({ activeView, onViewChange, apiState, apiDocsUrl, child
       <footer className="border-t border-border bg-card px-5 py-2 font-mono text-[9px] uppercase tracking-[0.06em] text-muted-foreground">
         <div className="mx-auto flex max-w-[1800px] flex-wrap items-center justify-between gap-2">
           <span>Fact Knowledge Layer · Evidence before assertion</span>
-          <span>Private workspace · Deterministic reasoning</span>
+          <span>Evidence workspace · Deterministic reasoning</span>
         </div>
       </footer>
     </div>

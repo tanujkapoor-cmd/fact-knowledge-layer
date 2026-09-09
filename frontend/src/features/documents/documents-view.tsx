@@ -157,12 +157,14 @@ export function DocumentsView({
 
   return (
     <div className="space-y-4">
-      <header className="max-w-3xl border-b border-border pb-4">
-        <h1 className="page-title">Document register</h1>
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-3">
+        <div className="max-w-3xl">
+        <h1 className="page-title">Source intake register</h1>
         <p className="page-description">
-          Upload a report, extract structured claims, and retain the exact source text needed to
-          audit every result.
+          Register a PDF, monitor extraction, then open its grounded claim ledger.
         </p>
+        </div>
+        <span className="font-mono text-[9px] uppercase tracking-[0.06em] text-muted-foreground">{documents.length} sources tracked</span>
       </header>
 
       <section className="grid overflow-hidden border border-border bg-card md:grid-cols-3" aria-label="System guarantees">
@@ -204,7 +206,7 @@ export function DocumentsView({
         ))}
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(320px,0.8fr)]">
+      <section className="grid gap-4 md:grid-cols-[minmax(0,1.45fr)_minmax(240px,0.75fr)]">
         <Card>
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
@@ -301,7 +303,7 @@ export function DocumentsView({
               Model output is treated as a candidate until the quote is recovered from source.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-4">
             {[
               ["Locate", "Physical PDF page plus optional printed label"],
               ["Recover", "Actual source substring with page-local offsets"],
@@ -361,10 +363,10 @@ export function DocumentsView({
           <span className="font-mono text-[11px] text-slate-500">{documents.length} TOTAL</span>
         </div>
         {documents.length ? (
-          <div className="grid gap-3">
+          <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
             {documents.map((document) => (
-              <Card key={document.id}>
-                <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
+              <Card key={document.id} className="min-w-0">
+                <CardContent className="flex min-w-0 flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="grid size-10 shrink-0 place-items-center border border-border bg-surface-low text-muted-foreground">
                       <ScanSearch className="size-4" aria-hidden="true" />
@@ -388,8 +390,8 @@ export function DocumentsView({
                       ) : null}
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge status={document.status} />
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <StatusBadge status={document.status} register={ACTIVE_STATUSES.includes(document.status) ? "RUN" : "DOC"} />
                     <Button
                       size="sm"
                       variant="ghost"

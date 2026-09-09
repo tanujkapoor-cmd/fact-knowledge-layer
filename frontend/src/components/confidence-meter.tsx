@@ -23,6 +23,11 @@ export function ConfidenceMeter({
         <span className="truncate" title={score.method}>{score.method}</span>
         <span className="tabular">{Math.round(score.value * 100)}%</span>
       </div>
+      {score.reasons[0] ? (
+        <p className="mt-1.5 line-clamp-2 text-[10px] leading-4 text-muted-foreground" title={score.reasons.join(" · ")}>
+          {score.reasons[0]}
+        </p>
+      ) : null}
     </div>
   )
 }

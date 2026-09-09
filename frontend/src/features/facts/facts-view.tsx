@@ -33,6 +33,7 @@ export function FactsView({ documents, selectedDocumentId, onSelectedDocumentCha
     [facts, selectedFactId],
   )
   const verifiedCount = facts.filter((fact) => fact.classification_eligible).length
+  const selectedDocument = documents.find((document) => document.id === selectedDocumentId)
 
   async function loadFacts() {
     const documentId = selectedDocumentId.trim()
@@ -62,8 +63,8 @@ export function FactsView({ documents, selectedDocumentId, onSelectedDocumentCha
         </div>
       </header>
 
-      <section className="ledger-panel grid gap-3 p-3 lg:grid-cols-[minmax(220px,0.9fr)_minmax(280px,1.25fr)_auto] lg:items-end" aria-label="Fact source controls">
-        <label className="space-y-1.5">
+      <section className="ledger-panel grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 p-3 lg:grid-cols-[minmax(220px,0.9fr)_minmax(280px,1.25fr)_auto] lg:items-end" aria-label="Fact source controls">
+        <label className="min-w-0 space-y-1.5">
           <span className="field-label">Tracked document</span>
           <Select
             value={documents.some((document) => document.id === selectedDocumentId) ? selectedDocumentId : undefined}
@@ -80,7 +81,7 @@ export function FactsView({ documents, selectedDocumentId, onSelectedDocumentCha
             </SelectContent>
           </Select>
         </label>
-        <label className="space-y-1.5">
+        <label className="min-w-0 space-y-1.5">
           <span className="field-label">Document identifier</span>
           <Input
             value={selectedDocumentId}
@@ -158,7 +159,7 @@ export function FactsView({ documents, selectedDocumentId, onSelectedDocumentCha
             </div>
 
             <div className="bg-card p-3 sm:p-4">
-              {selectedFact ? <FactInspector fact={selectedFact} label={`Exhibit ${String(facts.indexOf(selectedFact) + 1).padStart(2, "0")}`} /> : null}
+              {selectedFact ? <FactInspector fact={selectedFact} source={selectedDocument} label={`Exhibit ${String(facts.indexOf(selectedFact) + 1).padStart(3, "0")}`} /> : null}
             </div>
           </div>
         </section>

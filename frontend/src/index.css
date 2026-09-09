@@ -78,7 +78,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: none; }
   max-width: 900px;
   margin: 0;
   color: var(--foreground);
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-size: clamp(1.25rem, 1.7vw, 1.6rem);
   font-weight: 650;
   line-height: 1.15;
   letter-spacing: -0.03em;
@@ -86,7 +86,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: none; }
 }
 .page-description {
   max-width: 72ch;
-  margin: 0.55rem 0 0;
+  margin: 0.35rem 0 0;
   color: var(--muted-foreground);
   font-size: 0.875rem;
   line-height: 1.55;
@@ -105,7 +105,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: none; }
 .tabular { font-variant-numeric: tabular-nums; }
 
 @media (max-width: 640px) {
-  .page-title { font-size: 1.35rem; }
+  .page-title { font-size: 1.2rem; }
   .page-description { font-size: 0.8125rem; }
 }
 @media (prefers-reduced-motion: reduce) {

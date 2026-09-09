@@ -1,7 +1,4 @@
-import { Circle } from "lucide-react"
-
 import { Badge } from "@/components/ui/badge"
-import { sentenceCase } from "@/lib/utils"
 import type { DocumentStatus, EvidenceStatus, RelationshipType } from "@/lib/types"
 
 type Status = DocumentStatus | EvidenceStatus | RelationshipType
@@ -22,11 +19,28 @@ const toneByStatus = {
   classifying: "info",
 } as const
 
-export function StatusBadge({ status }: { status: Status }) {
+const registerByStatus: Record<Status, string> = {
+  completed: "DOC",
+  queued: "RUN",
+  ingesting: "RUN",
+  extracting: "RUN",
+  verifying: "RUN",
+  normalizing: "RUN",
+  classifying: "RUN",
+  verified: "EVD",
+  failed: "EVD",
+  corroborates: "REL",
+  contradicts: "REL",
+  reconciled: "REL",
+  uncertain: "REL",
+}
+
+export function StatusBadge({ status, register }: { status: Status; register?: "DOC" | "RUN" | "EVD" | "REL" }) {
   return (
-    <Badge variant={toneByStatus[status]}>
-      <Circle className="size-1.5 fill-current" aria-hidden="true" />
-      {sentenceCase(status)}
+    <Badge variant={toneByStatus[status]} className="gap-1.5 border-l-2 font-mono text-[8px] font-semibold uppercase tracking-[0.055em] tabular">
+      <span className="opacity-60">{register || registerByStatus[status]}</span>
+      <span aria-hidden="true">/</span>
+      {status}
     </Badge>
   )
 }
