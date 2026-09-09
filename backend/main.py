@@ -40,6 +40,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.db_session_factory = session_factory
     app.state.processing_status = {}
     app.include_router(api_router)
+    # Match the `/api` prefix used by the production React bundle while
+    # keeping the assignment's documented root endpoints available.
+    app.include_router(api_router, prefix="/api", include_in_schema=False)
     frontend_dist = Path(__file__).parents[1] / "frontend" / "dist"
     if frontend_dist.is_dir():
         app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
